@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h2 class="fw-bold mb-3">🛠 Admin Dashboard</h2>
+  <p class="text-muted">Approve farmer weighed products</p>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-header fw-bold">
+      Pending Weigh Logs
+    </div>
+
+    <div class="card-body p-0">
+
+      {% if logs %}
+
+      <table class="table mb-0 table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Farmer</th>
+            <th>Product</th>
+            <th>Weight (KG)</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td>
+              {{ log.farmer.full_name
+                 or log.farmer.username }}
+            </td>
+
+            <td>{{ log.product_name }}</td>
+
+            <td class="fw-bold text-success">
+              {{ log.weight_kg }} kg
+            </td>
+
+            <td class="text-muted">
+              {{ log.created_at.strftime('%b %d %Y') }}
+            </td>
+
+            <td>
+              <a href="{{ url_for(
+                   'admin.approve_log',
+                   log_id=log.id
+                 ) }}"
+                 class="btn btn-sm btn-success">
+                 Approve
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% else %}
+
+      <div class="text-center py-4 text-muted">
+        No pending weigh logs.
+      </div>
+
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
