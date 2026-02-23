@@ -1,20 +1,14 @@
-<<<<<<< HEAD
 {% extends 'base.html' %}
 {% block title %}Aking Dashboard{% endblock %}
-=======
 {% extends "base.html" %}
 {% block title %}Buyer Dashboard{% endblock %}
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 
 {% block content %}
 <div class="container py-4">
 
-<<<<<<< HEAD
   <h2 class="fw-bold mb-1">👤 Aking Dashboard</h2>
-=======
   <!-- HEADER -->
   <h2 class="fw-bold mb-1">🛒 Buyer Dashboard</h2>
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
   <p class="text-muted mb-4">
     Maligayang pagbabalik,
     {{ current_user.full_name or current_user.username }}!
@@ -23,11 +17,9 @@
   <!-- AI SEARCH BAR -->
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
-<<<<<<< HEAD
       <h5 class="fw-bold mb-3">🤖 AI Paghahanap ng Produkto</h5>
       <form action="{{ url_for('search.search') }}" method="GET">
         <div class="input-group">
-=======
 
       <h5 class="fw-bold mb-3">
         🤖 AI Paghahanap ng Produkto
@@ -36,13 +28,11 @@
       <form action="{{ url_for('search.search') }}" method="GET">
         <div class="input-group">
 
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
           <input type="text"
                  name="q"
                  class="form-control"
                  placeholder="Maghanap hal. kamatis, patatas, sibuyas..."
                  required>
-<<<<<<< HEAD
           <button class="btn btn-success">
             🔍 Maghanap
           </button>
@@ -111,7 +101,7 @@
 
   <!-- NEW SECTION: FARMER PRODUCTS -->
   <h4 class="fw-bold mt-4 mb-3">🌾 Mga Bagong Ani</h4>
-=======
+
 
           <button class="btn btn-success">
             🔍 Maghanap
@@ -125,14 +115,12 @@
 
   <!-- AVAILABLE PRODUCTS -->
   <h4 class="fw-bold mb-3">🌾 Available Products</h4>
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 
   <div class="row g-3">
 
     {% for product in products %}
 
     <div class="col-md-4">
-<<<<<<< HEAD
       <div class="card p-3 shadow-sm h-100">
 
         <h5>{{ product.name }}</h5>
@@ -168,7 +156,7 @@
 
     {% else %}
       <div class="col-12 text-center text-muted">
-=======
+
 
       <div class="card shadow-sm h-100">
 
@@ -217,7 +205,6 @@
 
     {% else %}
       <div class="col-12 text-center text-muted py-4">
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
         Wala pang available na produkto.
       </div>
     {% endfor %}
