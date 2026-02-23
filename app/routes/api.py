@@ -27,16 +27,38 @@ def start_weighing():
     if not user:
         return jsonify({"error": "Farmer not found"}), 404
 
-    # Set weighing flag
+    # Activate weighing flag
     user.is_weighing = True
     db.session.commit()
 
-    print(f"[API] Start weighing triggered for Farmer ID: {farmer_id}")
+    print(f"[API] ✅ Start weighing triggered for Farmer ID: {farmer_id}")
 
     return jsonify({
         "status": "started",
         "farmer_id": farmer_id
     })
+
+
+# ─────────────────────────
+# STOP WEIGHING (Manual Stop Button)
+# ─────────────────────────
+@api_bp.route("/stop-weighing", methods=["POST"])
+def stop_weighing():
+
+    data = request.get_json() or {}
+    farmer_id = data.get("farmer_id")
+
+    user = User.query.get(farmer_id)
+
+    if not user:
+        return jsonify({"error": "Farmer not found"}), 404
+
+    user.is_weighing = False
+    db.session.commit()
+
+    print(f"[API] 🛑 Weighing stopped for Farmer ID: {farmer_id}")
+
+    return jsonify({"status": "stopped"})
 
 
 # ─────────────────────────
@@ -76,10 +98,18 @@ def submit_weight():
     if not farmer:
         return jsonify({"error": "Farmer not found"}), 404
 
+    # Validate weight
     try:
         weight_value = float(weight)
     except:
         return jsonify({"error": "Invalid weight value"}), 400
+
+    if weight_value <= 0:
+        return jsonify({"error": "Weight must be greater than 0"}), 400
+
+    # Fallback values (VERY IMPORTANT para walang crash sa approve)
+    product_name = farmer.main_product or "Unnamed Product"
+    price_value = farmer.price_per_kg or 0
 
     # Create weigh log
     log = WeighLog(
@@ -90,8 +120,8 @@ def submit_weight():
         city=farmer.city,
         barangay=farmer.barangay,
         full_address=farmer.full_address,
-        product=farmer.main_product,
-        suggested_price=farmer.price_per_kg,
+        product=product_name,              # SAFE VALUE
+        suggested_price=price_value,       # SAFE VALUE
         weight=weight_value,
         status="pending"
     )
@@ -102,7 +132,7 @@ def submit_weight():
     db.session.add(log)
     db.session.commit()
 
-    print(f"[API] Weight saved → Farmer {farmer.id} | {weight_value} kg")
+    print(f"[API] ✅ Weight saved → Farmer {farmer.id} | {weight_value} kg")
 
     return jsonify({
         "message": "Weight submitted successfully",

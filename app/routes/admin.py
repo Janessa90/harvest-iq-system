@@ -52,12 +52,17 @@ def approve_log(log_id):
 
     log = WeighLog.query.get_or_404(log_id)
 
+    # ✅ SAFE fallback values
+    product_name = log.product or "Unnamed Product"
+    price_value = log.suggested_price or 0
+    stock_value = log.weight or 0
+
     # ✅ CREATE PRODUCT FROM LOG
     product = Product(
-        name=log.product,
+        name=product_name,          # <-- FIXED
         farmer_id=log.farmer_id,
-        stock_quantity=log.weight,
-        price=log.suggested_price,
+        stock_quantity=stock_value,
+        price=price_value,
         unit="kg",
         status="approved",
         is_available=True,
