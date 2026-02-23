@@ -1,16 +1,11 @@
 from app import db
 from datetime import datetime
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 class Product(db.Model):
     __tablename__ = "products"
 
     id = db.Column(db.Integer, primary_key=True)
 
-<<<<<<< HEAD
     # FOREIGN KEYS
     # Correctly references the 'users' table name we set in user.py
     farmer_id = db.Column(
@@ -42,7 +37,7 @@ class Product(db.Model):
     
     min_order_quantity = db.Column(
         db.Integer, 
-=======
+        
     # ─────────────────────────────
     # RELATIONSHIPS
     # ─────────────────────────────
@@ -85,12 +80,10 @@ class Product(db.Model):
 
     min_order_quantity = db.Column(
         db.Float,
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
         default=1
     )
 
     # ─────────────────────────────
-<<<<<<< HEAD
     # Images
     # ─────────────────────────────
     image = db.Column(
@@ -121,7 +114,7 @@ class Product(db.Model):
 
     # ─────────────────────────────
     # Analytics
-=======
+
     # MEDIA
     # ─────────────────────────────
     image = db.Column(
@@ -158,12 +151,10 @@ class Product(db.Model):
 
     # ─────────────────────────────
     # ANALYTICS
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     # ─────────────────────────────
     views = db.Column(db.Integer, default=0)
 
     # ─────────────────────────────
-<<<<<<< HEAD
     # Timestamps
     # ─────────────────────────────
     created_at = db.Column(
@@ -217,7 +208,6 @@ class Product(db.Model):
     @property
     def is_in_stock(self):
         return self.stock_quantity > 0 and self.is_available
-=======
     # TIMESTAMPS
     # ─────────────────────────────
     created_at = db.Column(
@@ -237,7 +227,6 @@ class Product(db.Model):
     @property
     def is_in_stock(self):
         return self.stock_quantity > 0
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 
     def __repr__(self):
         return f"<Product {self.name}>"
