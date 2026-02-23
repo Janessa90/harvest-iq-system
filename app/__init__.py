@@ -1,27 +1,22 @@
-<<<<<<< HEAD
 from flask import Flask, session
-=======
 from flask import Flask
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
 from flask_socketio import SocketIO
 from flask_migrate import Migrate
-<<<<<<< HEAD
 from datetime import datetime
 from config.development import DevelopmentConfig
 
 # ─────────────────────────────────────────────
 # INIT EXTENSIONS
-=======
+
 from sqlalchemy import text   # ✅ ADD THIS
 from config.development import DevelopmentConfig
 
 # ─────────────────────────────────────────────
 # EXTENSIONS
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 # ─────────────────────────────────────────────
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -34,10 +29,7 @@ migrate = Migrate()
 # APP FACTORY
 # ─────────────────────────────────────────────
 def create_app(config=DevelopmentConfig):
-<<<<<<< HEAD
-=======
 
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     app = Flask(__name__)
     app.config.from_object(config)
 
@@ -49,9 +41,8 @@ def create_app(config=DevelopmentConfig):
     mail.init_app(app)
     socketio.init_app(app, cors_allowed_origins="*")
 
-<<<<<<< HEAD
     # LOGIN CONFIG
-=======
+
     # ─────────────────────────────────────────
     # SQLITE WAL MODE (ANTI LOCK FIX)
     # ─────────────────────────────────────────
@@ -60,7 +51,6 @@ def create_app(config=DevelopmentConfig):
         db.session.commit()
 
     # LOGIN SETTINGS
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     login_manager.login_view = "auth.login"
     login_manager.login_message = "Please log in to access this page."
     login_manager.login_message_category = "info"
@@ -70,18 +60,16 @@ def create_app(config=DevelopmentConfig):
 
     @login_manager.user_loader
     def load_user(user_id):
-<<<<<<< HEAD
         # Use session.get for SQLAlchemy 2.0 compatibility
         return db.session.get(User, int(user_id))
 
     # REGISTER BLUEPRINTS
-=======
+
         return db.session.get(User, int(user_id))
 
     # ─────────────────────────────────────────
     # REGISTER BLUEPRINTS
     # ─────────────────────────────────────────
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     from app.routes.auth import auth_bp
     from app.routes.products import products_bp
     from app.routes.orders import orders_bp
@@ -102,9 +90,7 @@ def create_app(config=DevelopmentConfig):
     app.register_blueprint(cart_bp, url_prefix="/cart")
     app.register_blueprint(payment_bp, url_prefix="/payment")
     app.register_blueprint(main_bp)
-<<<<<<< HEAD
     app.register_blueprint(api_bp, url_prefix="/api")
-=======
     app.register_blueprint(api_bp, url_prefix="/api")
 
     # ─────────────────────────────────────────
@@ -118,4 +104,3 @@ def create_app(config=DevelopmentConfig):
         seed_admin()
 
     return app
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
