@@ -21,6 +21,9 @@
           <div class="text-muted small">{{ products|length }} products</div>
         </div>
       </div>
+      {% if farmer.bio %}
+      <p class="text-muted">{{ farmer.bio }}</p>
+      {% endif %}
     </div>
   </div>
 

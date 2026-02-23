@@ -30,22 +30,21 @@ def start_weighing():
 
     weight = request.form.get("weight")
 
+    if not weight:
+        flash("Weight is required.", "danger")
+        return redirect(url_for("farmer.dashboard"))
+
     log = WeighLog(
         farmer_id=current_user.id,
-        farmer_name=current_user.full_name,
-        phone=current_user.phone,
-        province=current_user.province,
-        city=current_user.city,
-        barangay=current_user.barangay,
-        full_address=current_user.full_address,
-        product=current_user.main_product,
-        suggested_price=current_user.price_per_kg,
-        weight=weight,
+        farmer_name=current_user.username,
+        weight=float(weight),
         status="pending"
     )
 
     db.session.add(log)
     db.session.commit()
+
+    print("Saved successfully")
 
     flash("Weight submitted for admin approval.", "success")
     return redirect(url_for("farmer.dashboard"))

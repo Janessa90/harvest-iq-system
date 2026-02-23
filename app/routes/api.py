@@ -11,6 +11,7 @@ api_bp = Blueprint(
 
 # ─────────────────────────
 # START WEIGHING
+# Dashboard → Hardware trigger
 # ─────────────────────────
 @api_bp.route("/start-weighing", methods=["POST"])
 def start_weighing():
@@ -26,14 +27,21 @@ def start_weighing():
     if not user:
         return jsonify({"error": "Farmer not found"}), 404
 
+    # Set weighing flag
     user.is_weighing = True
     db.session.commit()
 
-    return jsonify({"status": "started"})
+    print(f"[API] Start weighing triggered for Farmer ID: {farmer_id}")
+
+    return jsonify({
+        "status": "started",
+        "farmer_id": farmer_id
+    })
 
 
 # ─────────────────────────
 # CHECK WEIGHING
+# Hardware polling endpoint
 # ─────────────────────────
 @api_bp.route("/check-weighing/<int:farmer_id>")
 def check_weighing(farmer_id):
@@ -48,11 +56,14 @@ def check_weighing(farmer_id):
 
 # ─────────────────────────
 # SUBMIT WEIGHT
+# Hardware → Database
 # ─────────────────────────
 @api_bp.route("/submit-weight", methods=["POST"])
 def submit_weight():
 
     data = request.get_json() or {}
+
+    print("[API] Incoming weight data:", data)
 
     farmer_id = data.get("farmer_id")
     weight = data.get("weight")
@@ -62,19 +73,39 @@ def submit_weight():
 
     farmer = User.query.get(farmer_id)
 
+    if not farmer:
+        return jsonify({"error": "Farmer not found"}), 404
+
+    try:
+        weight_value = float(weight)
+    except:
+        return jsonify({"error": "Invalid weight value"}), 400
+
+    # Create weigh log
     log = WeighLog(
-        farmer_id=farmer_id,
-        product_name=farmer.main_product,  # ✅ AUTO PRODUCT
-        weight_kg=weight,
+        farmer_id=farmer.id,
+        farmer_name=farmer.username,
+        phone=farmer.phone,
+        province=farmer.province,
+        city=farmer.city,
+        barangay=farmer.barangay,
+        full_address=farmer.full_address,
+        product=farmer.main_product,
+        suggested_price=farmer.price_per_kg,
+        weight=weight_value,
         status="pending"
     )
 
-    # RESET FLAG
+    # Reset weighing flag
     farmer.is_weighing = False
 
     db.session.add(log)
     db.session.commit()
 
+    print(f"[API] Weight saved → Farmer {farmer.id} | {weight_value} kg")
+
     return jsonify({
-        "message": "Weight submitted successfully"
+        "message": "Weight submitted successfully",
+        "farmer_id": farmer.id,
+        "weight": weight_value
     })

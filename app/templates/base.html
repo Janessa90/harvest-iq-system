@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="tl">
 <head>
   <meta charset="UTF-8"/>
@@ -8,7 +7,6 @@
   <title>{% block title %}Harvest IQ{% endblock %}</title>
 
   <!-- CSS -->
-
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
   <link rel="stylesheet"
@@ -19,7 +17,6 @@
         href="{{ url_for('static', filename='css/main.css') }}"/>
 
 {% block extra_css %}{% endblock %}
-
 </head>
 
 <body>
@@ -54,14 +51,6 @@
 
     {% if current_user.is_authenticated %}
 
-    <!-- CART -->
-    <li class="nav-item">
-      <a class="nav-link"
-         href="{{ url_for('cart.view_cart') }}">
-        <i class="fas fa-shopping-cart"></i>
-      </a>
-    </li>
-
     <!-- USER -->
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle"
@@ -71,30 +60,6 @@
       </a>
 
       <ul class="dropdown-menu dropdown-menu-end">
-
-        <li>
-          <a class="dropdown-item"
-             href="{{ url_for('users.dashboard') }}">
-             Dashboard
-          </a>
-        </li>
-
-        <li>
-          <a class="dropdown-item"
-             href="{{ url_for('users.dashboard') }}">
-             Profile
-          </a>
-        </li>
-
-        <!-- ADMIN -->
-        {% if current_user.role == 'admin' %}
-        <li>
-          <a class="dropdown-item text-danger fw-bold"
-             href="{{ url_for('admin.dashboard') }}">
-             🛠 Admin Panel
-          </a>
-        </li>
-        {% endif %}
 
         <li><hr></li>
 
@@ -129,7 +94,6 @@
 
   </ul>
 </div>
-
 
   </div>
 </nav>
