@@ -20,12 +20,16 @@ auth_bp = Blueprint(
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
 
+<<<<<<< HEAD
     # If already logged in → redirect by role
+=======
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     if current_user.is_authenticated:
 
         if current_user.role == "admin":
             return redirect(url_for("admin.dashboard"))
 
+<<<<<<< HEAD
         elif current_user.role == "farmer":
             return redirect(url_for("users.dashboard"))
 
@@ -33,6 +37,10 @@ def login():
             return redirect(url_for("users.dashboard"))
 
     # LOGIN POST
+=======
+        return redirect(url_for("users.dashboard"))
+
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     if request.method == "POST":
 
         username = request.form.get("username", "").strip()
@@ -43,7 +51,10 @@ def login():
             username=username
         ).first()
 
+<<<<<<< HEAD
         # VALIDATE USER
+=======
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
         if user and user.check_password(password):
 
             login_user(user, remember=bool(remember))
@@ -54,6 +65,7 @@ def login():
                 "success"
             )
 
+<<<<<<< HEAD
             # ROLE BASED REDIRECT
             if user.role == "admin":
                 return redirect(url_for("admin.dashboard"))
@@ -63,6 +75,12 @@ def login():
 
             else:  # buyer
                 return redirect(url_for("users.dashboard"))
+=======
+            if user.role == "admin":
+                return redirect(url_for("admin.dashboard"))
+
+            return redirect(url_for("users.dashboard"))
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 
         else:
             flash("Maling username o password.", "danger")
@@ -79,11 +97,18 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for("users.dashboard"))
 
+<<<<<<< HEAD
     # GET
     if request.method == "GET":
         return render_template("auth/register.html")
 
     # POST DATA
+=======
+    if request.method == "GET":
+        return render_template("auth/register.html")
+
+    # COMMON DATA
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     role = request.form.get("role", "buyer")
     full_name = request.form.get("full_name", "").strip()
     phone = request.form.get("phone", "").strip()
@@ -116,14 +141,21 @@ def register():
     elif role == "farmer":
 
         username = request.form.get("username", "").strip()
+<<<<<<< HEAD
+=======
+        price_per_kg = request.form.get("price_per_kg", 0)
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 
         if User.query.filter_by(username=username).first():
             flash("Ang username na ito ay gamit na.", "danger")
             return render_template("auth/register.html")
 
+<<<<<<< HEAD
         # ✅ GET PRICE
         price_per_kg = request.form.get("price_per_kg")
 
+=======
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
         user = User(
             username=username,
             email=f"{username}@farmer.local",
@@ -134,6 +166,7 @@ def register():
             city=request.form.get("city"),
             barangay=request.form.get("barangay"),
             full_address=request.form.get("full_address"),
+<<<<<<< HEAD
             price_per_kg=price_per_kg,   # ✅ SAVE PRICE
             status="approved"
         )
@@ -148,6 +181,35 @@ def register():
     )
 
     return redirect(url_for("auth.login"))
+=======
+            price_per_kg=float(price_per_kg or 0),
+            status="approved"
+        )
+
+    # PASSWORD HASH
+    user.set_password(password)
+
+    # SAVE
+    try:
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash(
+            f"Matagumpay na naka-register, {full_name or 'User'}!",
+            "success"
+        )
+
+        return redirect(url_for("auth.login"))
+
+    except Exception as e:
+
+        db.session.rollback()
+        print("Commit error:", e)
+
+        flash("Registration failed. Try again.", "danger")
+        return render_template("auth/register.html")
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 
 
 # ─────────────────────────────────────────────
@@ -167,6 +229,10 @@ def forgot_password():
         "auth/forgot_password.html"
     )
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 # ─────────────────────────────────────────────
 # LOGOUT
 # ─────────────────────────────────────────────
