@@ -13,33 +13,24 @@
   <!-- AI SEARCH BAR -->
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
-
       <h5 class="fw-bold mb-3">🤖 AI Paghahanap ng Produkto</h5>
-
       <form action="{{ url_for('search.search') }}" method="GET">
         <div class="input-group">
-
-          <input
-            type="text"
-            name="q"
-            class="form-control"
-            placeholder="Maghanap hal. kamatis, patatas, sibuyas..."
-            required
-          >
-
+          <input type="text"
+                 name="q"
+                 class="form-control"
+                 placeholder="Maghanap hal. kamatis, patatas, sibuyas..."
+                 required>
           <button class="btn btn-success">
             🔍 Maghanap
           </button>
-
         </div>
       </form>
-
     </div>
   </div>
 
   <!-- Quick Stats -->
   <div class="row g-3 mb-4">
-
     <div class="col-6 col-md-3">
       <div class="card border-0 shadow-sm text-center p-3">
         <div class="stat-icon">📦</div>
@@ -78,12 +69,10 @@
         <div class="text-muted small">Kabuuang Nagastos</div>
       </div>
     </div>
-
   </div>
 
   <!-- Quick Actions -->
   <div class="row g-3 mb-4">
-
     <div class="col-md-4">
       <a href="{{ url_for('products.list_products') }}"
          class="card border-0 shadow-sm text-decoration-none text-dark quick-action-card">
@@ -91,134 +80,60 @@
           <div class="quick-icon">🛒</div>
           <div>
             <div class="fw-semibold">Mamili ng Produkto</div>
-            <div class="text-muted small">
-              Sariwang ani mula sa bukid
-            </div>
+            <div class="text-muted small">Sariwang ani mula sa bukid</div>
           </div>
         </div>
       </a>
     </div>
-
-    <div class="col-md-4">
-      <a href="{{ url_for('orders.my_orders') }}"
-         class="card border-0 shadow-sm text-decoration-none text-dark quick-action-card">
-        <div class="card-body d-flex align-items-center gap-3 py-3">
-          <div class="quick-icon">📋</div>
-          <div>
-            <div class="fw-semibold">Aking Mga Order</div>
-            <div class="text-muted small">
-              Subaybayan ang delivery
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-md-4">
-      <a href="{{ url_for('users.profile') }}"
-         class="card border-0 shadow-sm text-decoration-none text-dark quick-action-card">
-        <div class="card-body d-flex align-items-center gap-3 py-3">
-          <div class="quick-icon">👤</div>
-          <div>
-            <div class="fw-semibold">Aking Profile</div>
-            <div class="text-muted small">
-              I-edit ang impormasyon
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-
   </div>
 
-  <!-- Recent Orders -->
-  <div class="card border-0 shadow-sm" style="border-radius:14px">
+  <!-- NEW SECTION: FARMER PRODUCTS -->
+  <h4 class="fw-bold mt-4 mb-3">🌾 Mga Bagong Ani</h4>
 
-    <div class="card-header bg-transparent fw-bold border-0 pt-3
-                d-flex justify-content-between align-items-center">
-      Mga Huling Order
-      <a href="{{ url_for('orders.my_orders') }}"
-         class="btn btn-outline-success btn-sm">
-         Tingnan Lahat
-      </a>
-    </div>
+  <div class="row g-3">
 
-    <div class="card-body p-0">
+    {% for product in products %}
 
-      {% if orders %}
-      <div class="table-responsive">
+    <div class="col-md-4">
+      <div class="card p-3 shadow-sm h-100">
 
-        <table class="table table-hover mb-0">
+        <h5>{{ product.name }}</h5>
 
-          <thead class="table-light">
-            <tr>
-              <th>Order</th>
-              <th>Item</th>
-              <th>Kabuuan</th>
-              <th>Status</th>
-              <th>Petsa</th>
-              <th></th>
-            </tr>
-          </thead>
+        <p>
+          <strong>Magsasaka:</strong>
+          {{ product.farmer.full_name }}
+        </p>
 
-          <tbody>
-          {% for order in orders %}
-            <tr>
+        <p>
+          <strong>Lugar:</strong>
+          {{ product.farmer.province }}
+        </p>
 
-              <td class="fw-semibold text-success">
-                #{{ order.id }}
-              </td>
+        <p>
+          <strong>Stock:</strong>
+          {{ product.stock_quantity }} kg
+        </p>
 
-              <td class="text-muted small">
-                {{ order.item_count }} item(s)
-              </td>
+        <p>
+          <strong>Presyo:</strong>
+          ₱{{ product.price }}/kg
+        </p>
 
-              <td class="fw-semibold">
-                ₱{{ "%.2f"|format(order.total_amount) }}
-              </td>
-
-              <td>
-                <span class="badge
-                  {% if order.status == 'delivered' %}bg-success
-                  {% elif order.status == 'cancelled' %}bg-danger
-                  {% elif order.status == 'pending' %}bg-warning text-dark
-                  {% else %}bg-info text-dark{% endif %}">
-                  {{ order.status | title }}
-                </span>
-              </td>
-
-              <td class="text-muted small">
-                {{ order.created_at.strftime('%b %d, %Y') }}
-              </td>
-
-              <td>
-                <a href="{{ url_for('orders.order_detail',
-                                    order_id=order.id) }}"
-                   class="btn btn-sm btn-outline-success">
-                   Tingnan
-                </a>
-              </td>
-
-            </tr>
-          {% endfor %}
-          </tbody>
-
-        </table>
-
-      </div>
-
-      {% else %}
-
-      <div class="text-center py-4 text-muted">
-        Wala pang order.
-        <a href="{{ url_for('products.list_products') }}"
-           class="text-success">
-           Mamili na!
+        <a href="{{ url_for('products.detail',
+                            product_id=product.id) }}"
+           class="btn btn-success btn-sm mt-2">
+           Tingnan
         </a>
-      </div>
 
-      {% endif %}
+      </div>
     </div>
+
+    {% else %}
+      <div class="col-12 text-center text-muted">
+        Wala pang available na produkto.
+      </div>
+    {% endfor %}
+
   </div>
 
 </div>

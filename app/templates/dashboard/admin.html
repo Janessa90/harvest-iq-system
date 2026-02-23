@@ -4,8 +4,8 @@
 {% block content %}
 <div class="container py-4">
 
-  <h2 class="fw-bold mb-3">🛠 Admin Dashboard</h2>
-  <p class="text-muted">Approve farmer weighed products</p>
+  <h2 class="fw-bold mb-2">🛠 Admin Dashboard</h2>
+  <p class="text-muted mb-4">Approve farmer weighed products</p>
 
   <div class="card shadow-sm border-0">
     <div class="card-header fw-bold">
@@ -15,60 +15,101 @@
     <div class="card-body p-0">
 
       {% if logs %}
-
-      <table class="table mb-0 table-hover">
+      <div class="table-responsive">
+      <table class="table mb-0 table-hover align-middle">
         <thead class="table-light">
           <tr>
             <th>Farmer</th>
+            <th>Location</th>
             <th>Product</th>
-            <th>Weight (KG)</th>
-            <th>Date</th>
-            <th></th>
+            <th>Weight</th>
+            <th>Price/kg</th>
+            <th>Total Value</th>
+            <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
           {% for log in logs %}
           <tr>
+
+            <!-- FARMER -->
             <td>
-              {{ log.farmer.full_name
-                 or log.farmer.username }}
+              <div class="fw-semibold">
+                {{ log.farmer.full_name or log.farmer.username }}
+              </div>
+              <small class="text-muted">
+                ID: {{ log.farmer.id }}
+              </small>
             </td>
 
-            <td>{{ log.product_name }}</td>
+            <!-- LOCATION -->
+            <td>
+              {{ log.farmer.city }},
+              {{ log.farmer.province }}
+            </td>
 
+            <!-- PRODUCT -->
+            <td>
+              {{ log.product_name }}
+            </td>
+
+            <!-- WEIGHT -->
             <td class="fw-bold text-success">
               {{ log.weight_kg }} kg
             </td>
 
-            <td class="text-muted">
-              {{ log.created_at.strftime('%b %d %Y') }}
+            <!-- PRICE INPUT -->
+            <td>
+              <form action="{{ url_for('admin.approve_log', log_id=log.id) }}"
+                    method="POST"
+                    class="d-flex gap-2">
+
+                <input type="number"
+                       name="price"
+                       step="0.01"
+                       value="{{ log.farmer.price_per_kg }}"
+                       required
+                       class="form-control form-control-sm"
+                       style="width:120px;">
             </td>
 
+            <!-- AUTO TOTAL PREVIEW -->
             <td>
-              <a href="{{ url_for(
-                   'admin.approve_log',
-                   log_id=log.id
-                 ) }}"
-                 class="btn btn-sm btn-success">
-                 Approve
-              </a>
+              ₱{{ "%.2f"|format(log.weight_kg * (log.farmer.price_per_kg or 0)) }}
             </td>
+
+            <!-- APPROVE BUTTON -->
+            <td>
+                <button type="submit"
+                        class="btn btn-sm btn-success">
+                  Approve
+                </button>
+              </form>
+            </td>
+
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      </div>
 
       {% else %}
-
       <div class="text-center py-4 text-muted">
         No pending weigh logs.
       </div>
-
       {% endif %}
 
     </div>
   </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+setInterval(function(){
+    location.reload();
+}, 5000);
+</script>
 {% endblock %}

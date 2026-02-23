@@ -3,14 +3,14 @@ from datetime import datetime
 
 
 class WeighLog(db.Model):
-    _tablename_ = "weigh_logs"
+    __tablename__ = "weigh_logs"
 
     id = db.Column(db.Integer, primary_key=True)
 
     # ✅ FIXED FOREIGN KEY
     farmer_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),   # MUST MATCH _tablename_
+        db.ForeignKey("users.id"),   # MUST MATCH __tablename__
         nullable=False
     )
 

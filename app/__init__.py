@@ -6,13 +6,7 @@ from flask_mail import Mail
 from flask_socketio import SocketIO
 from flask_migrate import Migrate
 from datetime import datetime
-import sys
-import os
-sys.path.append(os.getcwd()) # Adds the current folder to Python's search path
-
 from config.development import DevelopmentConfig
-
-# ... (rest of the extensions)
 
 # ─────────────────────────────────────────────
 # INIT EXTENSIONS
@@ -74,41 +68,3 @@ def create_app(config=DevelopmentConfig):
     app.register_blueprint(payment_bp, url_prefix="/payment")
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
-
-    # CONTEXT PROCESSOR
-    @app.context_processor
-    def inject_globals():
-        lang = session.get("lang", "en")
-        return {
-            "lang": lang,
-            "now": datetime.now(),
-            "unread_count": 0
-        }
-
-    # 🚀 FORCE MODEL REGISTRATION (CRITICAL)
-    with app.app_context():
-        # Step A: Import the User model first and ALONE
-        from app.models.user import User
-        
-        # Step B: Manually tell the DB to register the User metadata
-        db.get_engine(app=app) 
-        
-        # Step C: Import everything else
-        from app.models.category import Category
-        from app.models.product import Product
-        from app.models.order import Order
-        from app.models.weigh_logs import WeighLog
-        from app.models.review import Review
-
-        # Step D: Create tables
-        db.create_all()
-
-        # Step E: Seeders
-        from app.utils.helpers import seed_categories, seed_admin
-        try:
-            seed_categories()
-            seed_admin()
-        except Exception as e:
-            print(f"Seeding skipped: {e}")
-
-    return app
