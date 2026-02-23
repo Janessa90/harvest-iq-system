@@ -5,18 +5,15 @@
 <div class="container py-4">
 
   <h2 class="fw-bold mb-2">🛠 Admin Dashboard</h2>
-<<<<<<< HEAD
   <p class="text-muted mb-4">Approve farmer weighed products</p>
 
   <div class="card shadow-sm border-0">
-=======
   <p class="text-muted mb-4">
     Approve farmer weighed products
   </p>
 
   <div class="card shadow-sm border-0">
 
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     <div class="card-header fw-bold">
       Pending Weigh Logs
     </div>
@@ -25,12 +22,11 @@
 
       {% if logs %}
       <div class="table-responsive">
-<<<<<<< HEAD
       <table class="table mb-0 table-hover align-middle">
         <thead class="table-light">
           <tr>
             <th>Farmer</th>
-=======
+
 
       <table class="table mb-0 table-hover align-middle">
 
@@ -38,7 +34,6 @@
           <tr>
             <th>Farmer</th>
             <th>Contact</th>
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
             <th>Location</th>
             <th>Product</th>
             <th>Weight</th>
@@ -49,7 +44,6 @@
         </thead>
 
         <tbody>
-<<<<<<< HEAD
           {% for log in logs %}
           <tr>
 
@@ -72,7 +66,7 @@
             <!-- PRODUCT -->
             <td>
               {{ log.product_name }}
-=======
+
         {% for log in logs %}
           <tr>
 
@@ -101,12 +95,10 @@
             <!-- PRODUCT -->
             <td class="fw-semibold">
               {{ log.product }}
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
             </td>
 
             <!-- WEIGHT -->
             <td class="fw-bold text-success">
-<<<<<<< HEAD
               {{ log.weight_kg }} kg
             </td>
 
@@ -142,7 +134,7 @@
           </tr>
           {% endfor %}
         </tbody>
-=======
+
               {{ log.weight }} kg
             </td>
 
@@ -173,7 +165,6 @@
         {% endfor %}
         </tbody>
 
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
       </table>
       </div>
 
@@ -194,9 +185,7 @@
 setInterval(function(){
 <<<<<<< HEAD
     location.reload();
-=======
   location.reload();
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
 }, 5000);
 </script>
 {% endblock %}
