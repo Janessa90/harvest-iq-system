@@ -1,7 +1,5 @@
 from app import db, bcrypt
 from flask_login import UserMixin
-<<<<<<< HEAD
-
 
 class User(db.Model):
     __tablename__ = "users"
@@ -18,7 +16,7 @@ class User(db.Model):
     status = db.Column(db.String(50), default="approved")
 
     # PROFILE
-=======
+
 from datetime import datetime
 
 
@@ -74,7 +72,6 @@ class User(db.Model, UserMixin):
     # ─────────────────────────────────────────────
     # PROFILE INFO
     # ─────────────────────────────────────────────
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
     full_name = db.Column(db.String(150))
     phone = db.Column(db.String(50))
 
@@ -83,7 +80,6 @@ class User(db.Model, UserMixin):
     barangay = db.Column(db.String(100))
     full_address = db.Column(db.Text)
 
-<<<<<<< HEAD
     # FARMER PRODUCT INFO
     main_product = db.Column(db.String(100))
     price_per_kg = db.Column(db.Float, default=0)
@@ -105,7 +101,7 @@ class User(db.Model, UserMixin):
 
     def get_id(self):
         return str(self.id)
-=======
+
     # ─────────────────────────────────────────────
     # FARMER PRODUCT INFO
     # ─────────────────────────────────────────────
@@ -164,4 +160,3 @@ class User(db.Model, UserMixin):
 
     def is_approved(self):
         return self.status == "approved"
->>>>>>> 24211ea (Updated AI search, weighing system, admin approval, dashboards)
