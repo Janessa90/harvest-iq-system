@@ -1,4 +1,3 @@
-from flask import Flask, session
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -6,12 +5,6 @@ from flask_bcrypt import Bcrypt
 from flask_mail import Mail
 from flask_socketio import SocketIO
 from flask_migrate import Migrate
-from datetime import datetime
-from config.development import DevelopmentConfig
-
-# ─────────────────────────────────────────────
-# INIT EXTENSIONS
-
 from sqlalchemy import text   # ✅ ADD THIS
 from config.development import DevelopmentConfig
 
@@ -41,8 +34,6 @@ def create_app(config=DevelopmentConfig):
     mail.init_app(app)
     socketio.init_app(app, cors_allowed_origins="*")
 
-    # LOGIN CONFIG
-
     # ─────────────────────────────────────────
     # SQLITE WAL MODE (ANTI LOCK FIX)
     # ─────────────────────────────────────────
@@ -60,11 +51,6 @@ def create_app(config=DevelopmentConfig):
 
     @login_manager.user_loader
     def load_user(user_id):
-        # Use session.get for SQLAlchemy 2.0 compatibility
-        return db.session.get(User, int(user_id))
-
-    # REGISTER BLUEPRINTS
-
         return db.session.get(User, int(user_id))
 
     # ─────────────────────────────────────────
@@ -90,7 +76,6 @@ def create_app(config=DevelopmentConfig):
     app.register_blueprint(cart_bp, url_prefix="/cart")
     app.register_blueprint(payment_bp, url_prefix="/payment")
     app.register_blueprint(main_bp)
-    app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(api_bp, url_prefix="/api")
 
     # ─────────────────────────────────────────

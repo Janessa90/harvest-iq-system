@@ -5,9 +5,6 @@
 <div class="container py-4">
 
   <h2 class="fw-bold mb-2">🛠 Admin Dashboard</h2>
-  <p class="text-muted mb-4">Approve farmer weighed products</p>
-
-  <div class="card shadow-sm border-0">
   <p class="text-muted mb-4">
     Approve farmer weighed products
   </p>
@@ -22,11 +19,6 @@
 
       {% if logs %}
       <div class="table-responsive">
-      <table class="table mb-0 table-hover align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Farmer</th>
-
 
       <table class="table mb-0 table-hover align-middle">
 
@@ -44,29 +36,6 @@
         </thead>
 
         <tbody>
-          {% for log in logs %}
-          <tr>
-
-            <!-- FARMER -->
-            <td>
-              <div class="fw-semibold">
-                {{ log.farmer.full_name or log.farmer.username }}
-              </div>
-              <small class="text-muted">
-                ID: {{ log.farmer.id }}
-              </small>
-            </td>
-
-            <!-- LOCATION -->
-            <td>
-              {{ log.farmer.city }},
-              {{ log.farmer.province }}
-            </td>
-
-            <!-- PRODUCT -->
-            <td>
-              {{ log.product_name }}
-
         {% for log in logs %}
           <tr>
 
@@ -99,42 +68,6 @@
 
             <!-- WEIGHT -->
             <td class="fw-bold text-success">
-              {{ log.weight_kg }} kg
-            </td>
-
-            <!-- PRICE INPUT -->
-            <td>
-              <form action="{{ url_for('admin.approve_log', log_id=log.id) }}"
-                    method="POST"
-                    class="d-flex gap-2">
-
-                <input type="number"
-                       name="price"
-                       step="0.01"
-                       value="{{ log.farmer.price_per_kg }}"
-                       required
-                       class="form-control form-control-sm"
-                       style="width:120px;">
-            </td>
-
-            <!-- AUTO TOTAL PREVIEW -->
-            <td>
-              ₱{{ "%.2f"|format(log.weight_kg * (log.farmer.price_per_kg or 0)) }}
-            </td>
-
-            <!-- APPROVE BUTTON -->
-            <td>
-                <button type="submit"
-                        class="btn btn-sm btn-success">
-                  Approve
-                </button>
-              </form>
-            </td>
-
-          </tr>
-          {% endfor %}
-        </tbody>
-
               {{ log.weight }} kg
             </td>
 
@@ -183,8 +116,6 @@
 {% block extra_js %}
 <script>
 setInterval(function(){
-<<<<<<< HEAD
-    location.reload();
   location.reload();
 }, 5000);
 </script>

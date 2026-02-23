@@ -20,9 +20,9 @@ auth_bp = Blueprint(
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
 
-    # If already logged in → redirect by role
-
+    # If already logged in
     if current_user.is_authenticated:
+        print("ALREADY LOGGED IN ROLE:", current_user.role)
 
         if current_user.role == "admin":
             return redirect(url_for("admin.dashboard"))
@@ -30,24 +30,17 @@ def login():
         elif current_user.role == "farmer":
             return redirect(url_for("users.dashboard"))
 
-        else:  # buyer
+        else:
             return redirect(url_for("users.dashboard"))
 
-    # LOGIN POST
-
-        return redirect(url_for("users.dashboard"))
-
+    # Handle POST login
     if request.method == "POST":
 
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
         remember = request.form.get("remember", False)
 
-        user = User.query.filter_by(
-            username=username
-        ).first()
-
-        # VALIDATE USER
+        user = User.query.filter_by(username=username).first()
 
         if user and user.check_password(password):
 
@@ -59,19 +52,25 @@ def login():
                 "success"
             )
 
-            # ROLE BASED REDIRECT
+            # 🔍 DEBUG PRINT
+            print("LOGIN ROLE:", user.role)
+
             if user.role == "admin":
+                print("→ ADMIN REDIRECT")
                 return redirect(url_for("admin.dashboard"))
 
             elif user.role == "farmer":
+                print("→ FARMER REDIRECT")
                 return redirect(url_for("users.dashboard"))
 
-            else:  # buyer
+            elif user.role == "buyer":
+                print("→ BUYER REDIRECT")
                 return redirect(url_for("users.dashboard"))
-            if user.role == "admin":
-                return redirect(url_for("admin.dashboard"))
 
-            return redirect(url_for("users.dashboard"))
+            else:
+                print("→ UNKNOWN ROLE")
+                flash("Unknown role detected.", "danger")
+                return redirect(url_for("auth.login"))
 
         else:
             flash("Maling username o password.", "danger")
@@ -88,11 +87,6 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for("users.dashboard"))
 
-    # GET
-    if request.method == "GET":
-        return render_template("auth/register.html")
-
-    # POST DATA
     if request.method == "GET":
         return render_template("auth/register.html")
 
@@ -130,14 +124,10 @@ def register():
 
         username = request.form.get("username", "").strip()
         price_per_kg = request.form.get("price_per_kg", 0)
-        
+
         if User.query.filter_by(username=username).first():
             flash("Ang username na ito ay gamit na.", "danger")
             return render_template("auth/register.html")
-
-        # ✅ GET PRICE
-        price_per_kg = request.form.get("price_per_kg")
-
 
         user = User(
             username=username,
@@ -149,33 +139,23 @@ def register():
             city=request.form.get("city"),
             barangay=request.form.get("barangay"),
             full_address=request.form.get("full_address"),
-            price_per_kg=price_per_kg,   # ✅ SAVE PRICE
-            status="approved"
-        )
-
-    user.set_password(password)
-    db.session.add(user)
-    db.session.commit()
-
-    flash(
-        f"Matagumpay na naka-register, {full_name or 'User'}!",
-        "success"
-    )
-
-    return redirect(url_for("auth.login"))
-
             price_per_kg=float(price_per_kg or 0),
             status="approved"
         )
+
+    else:
+        flash("Invalid role selected.", "danger")
+        return render_template("auth/register.html")
 
     # PASSWORD HASH
     user.set_password(password)
 
     # SAVE
     try:
-
         db.session.add(user)
         db.session.commit()
+
+        print("REGISTERED USER ROLE:", user.role)
 
         flash(
             f"Matagumpay na naka-register, {full_name or 'User'}!",
@@ -185,7 +165,6 @@ def register():
         return redirect(url_for("auth.login"))
 
     except Exception as e:
-
         db.session.rollback()
         print("Commit error:", e)
 
@@ -200,15 +179,10 @@ def register():
 def forgot_password():
 
     if request.method == "POST":
-        flash(
-            "Password reset feature coming soon.",
-            "info"
-        )
+        flash("Password reset feature coming soon.", "info")
         return redirect(url_for("auth.login"))
 
-    return render_template(
-        "auth/forgot_password.html"
-    )
+    return render_template("auth/forgot_password.html")
 
 
 # ─────────────────────────────────────────────
@@ -218,11 +192,10 @@ def forgot_password():
 @login_required
 def logout():
 
+    print("LOGOUT ROLE:", current_user.role)
+
     logout_user()
 
-    flash(
-        "Ikaw ay matagumpay na naka-logout.",
-        "success"
-    )
+    flash("Ikaw ay matagumpay na naka-logout.", "success")
 
     return redirect(url_for("auth.login"))

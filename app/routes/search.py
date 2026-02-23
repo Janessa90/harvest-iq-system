@@ -9,30 +9,18 @@ search_bp = Blueprint(
     url_prefix="/search"
 )
 
-# ─────────────────────────────────────────────
-# AI KEYWORD DICTIONARY
-# ─────────────────────────────────────────────
+# ─────────────────────────────
+# AI KEYWORDS
+# ─────────────────────────────
 AI_KEYWORDS = {
     "tomato": ["kamatis", "toma", "tomat"],
     "potato": ["patatas", "poteto"],
-
-# ─────────────────────────────
-# SIMPLE AI KEYWORDS
-# ─────────────────────────────
-AI_KEYWORDS = {
-    "tomato": ["kamatis"],
-    "potato": ["patatas"],
     "onion": ["sibuyas"],
     "eggplant": ["talong"],
     "rice": ["bigas", "palay"],
     "corn": ["mais"],
     "banana": ["saging"]
 }
-
- 
-
-def expand_keywords(keyword):
-    """AI keyword expansion"""
 
 # ─────────────────────────────
 # KEYWORD EXPANSION
@@ -50,10 +38,6 @@ def expand_keywords(keyword):
 
     return list(set(words))
 
-
-# ─────────────────────────────────────────────
-# AI SEARCH ROUTE
-# ─────────────────────────────────────────────
 
 # ─────────────────────────────
 # SEARCH ROUTE
@@ -77,15 +61,6 @@ def search():
             filters.append(Product.name.ilike(f"%{word}%"))
             filters.append(Product.description.ilike(f"%{word}%"))
 
-
-
-            # Partial match
-            filters.append(Product.name.ilike(f"%{word}%"))
-            filters.append(Product.description.ilike(f"%{word}%"))
-
-            # Autocomplete match
-            filters.append(Product.name.ilike(f"{word}%"))
-
         products = Product.query.filter(
             or_(*filters),
             Product.status == "approved",
@@ -96,4 +71,4 @@ def search():
         "search/results.html",
         products=products,
         keyword=keyword
-
+    )

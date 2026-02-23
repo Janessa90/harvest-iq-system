@@ -1,12 +1,9 @@
-{% extends 'base.html' %}
-{% block title %}Aking Dashboard{% endblock %}
 {% extends "base.html" %}
 {% block title %}Buyer Dashboard{% endblock %}
 
 {% block content %}
 <div class="container py-4">
 
-  <h2 class="fw-bold mb-1">👤 Aking Dashboard</h2>
   <!-- HEADER -->
   <h2 class="fw-bold mb-1">🛒 Buyer Dashboard</h2>
   <p class="text-muted mb-4">
@@ -17,9 +14,6 @@
   <!-- AI SEARCH BAR -->
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
-      <h5 class="fw-bold mb-3">🤖 AI Paghahanap ng Produkto</h5>
-      <form action="{{ url_for('search.search') }}" method="GET">
-        <div class="input-group">
 
       <h5 class="fw-bold mb-3">
         🤖 AI Paghahanap ng Produkto
@@ -33,75 +27,6 @@
                  class="form-control"
                  placeholder="Maghanap hal. kamatis, patatas, sibuyas..."
                  required>
-          <button class="btn btn-success">
-            🔍 Maghanap
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Quick Stats -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm text-center p-3">
-        <div class="stat-icon">📦</div>
-        <div class="fs-3 fw-bold">{{ orders|length }}</div>
-        <div class="text-muted small">Kabuuang Order</div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm text-center p-3">
-        <div class="stat-icon text-success">✅</div>
-        <div class="fs-3 fw-bold">
-          {{ orders|selectattr('status','eq','delivered')|list|length }}
-        </div>
-        <div class="text-muted small">Na-deliver</div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm text-center p-3">
-        <div class="stat-icon text-warning">⏳</div>
-        <div class="fs-3 fw-bold">
-          {{ orders|selectattr('status','in',
-          ['pending','confirmed','processing','shipped'])|list|length }}
-        </div>
-        <div class="text-muted small">Pinoproseso</div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm text-center p-3">
-        <div class="stat-icon text-success">💰</div>
-        <div class="fs-3 fw-bold">
-          ₱{{ "%.0f"|format(orders|sum(attribute='total_amount')) }}
-        </div>
-        <div class="text-muted small">Kabuuang Nagastos</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-4">
-      <a href="{{ url_for('products.list_products') }}"
-         class="card border-0 shadow-sm text-decoration-none text-dark quick-action-card">
-        <div class="card-body d-flex align-items-center gap-3 py-3">
-          <div class="quick-icon">🛒</div>
-          <div>
-            <div class="fw-semibold">Mamili ng Produkto</div>
-            <div class="text-muted small">Sariwang ani mula sa bukid</div>
-          </div>
-        </div>
-      </a>
-    </div>
-  </div>
-
-  <!-- NEW SECTION: FARMER PRODUCTS -->
-  <h4 class="fw-bold mt-4 mb-3">🌾 Mga Bagong Ani</h4>
-
 
           <button class="btn btn-success">
             🔍 Maghanap
@@ -121,42 +46,6 @@
     {% for product in products %}
 
     <div class="col-md-4">
-      <div class="card p-3 shadow-sm h-100">
-
-        <h5>{{ product.name }}</h5>
-
-        <p>
-          <strong>Magsasaka:</strong>
-          {{ product.farmer.full_name }}
-        </p>
-
-        <p>
-          <strong>Lugar:</strong>
-          {{ product.farmer.province }}
-        </p>
-
-        <p>
-          <strong>Stock:</strong>
-          {{ product.stock_quantity }} kg
-        </p>
-
-        <p>
-          <strong>Presyo:</strong>
-          ₱{{ product.price }}/kg
-        </p>
-
-        <a href="{{ url_for('products.detail',
-                            product_id=product.id) }}"
-           class="btn btn-success btn-sm mt-2">
-           Tingnan
-        </a>
-
-      </div>
-    </div>
-
-    {% else %}
-      <div class="col-12 text-center text-muted">
-
 
       <div class="card shadow-sm h-100">
 
