@@ -4,51 +4,51 @@
 {% block content %}
 <div class="container py-4">
 
-  <h4 class="fw-bold mb-3">
-    Search Results for "{{ keyword }}"
-  </h4>
+  <h3 class="fw-bold mb-3">
+    🔍 Resulta para sa "{{ query }}"
+  </h3>
 
-  {% if products %}
+  <div class="row g-3">
 
-    <div class="row">
+    {% for product in products %}
 
-      {% for product in products %}
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
 
-      <div class="col-md-3 mb-4">
+        <img src="{{ url_for('static',
+              filename='uploads/' + (product.image or 'default_product.jpg')) }}"
+             class="card-img-top"
+             style="height:200px; object-fit:cover;">
 
-        <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
 
-          <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
-               class="card-img-top"
-               style="height:200px;object-fit:cover;">
+          <h5>{{ product.name }}</h5>
 
-          <div class="card-body">
+          <p><strong>Magsasaka:</strong>
+             {{ product.farmer.full_name or product.farmer.username }}
+          </p>
 
-            <h6 class="fw-bold">
-              {{ product.name }}
-            </h6>
+          <p><strong>Lugar:</strong> {{ product.location }}</p>
 
-            <p class="text-success fw-bold">
-              ₱{{ "%.2f"|format(product.price) }}
-            </p>
+          <p><strong>Stock:</strong> {{ product.stock_quantity }} kg</p>
 
-          </div>
+          <h6 class="text-success">
+            ₱{{ product.price }}/kg
+          </h6>
 
         </div>
-
       </div>
-
-      {% endfor %}
-
     </div>
 
-  {% else %}
+    {% else %}
 
-    <div class="alert alert-warning">
-      No products found.
+    <div class="col-12 text-center text-muted py-5">
+      Walang nahanap na produkto.
     </div>
 
-  {% endif %}
+    {% endfor %}
+
+  </div>
 
 </div>
 {% endblock %}

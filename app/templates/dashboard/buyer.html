@@ -4,58 +4,9 @@
 {% block content %}
 <div class="container py-4">
 
+  <!-- HEADER -->
   <h2 class="fw-bold mb-1">🛒 Buyer Dashboard</h2>
 
-  <h4 class="fw-bold mb-3">🌾 Available Products</h4>
-
-  <div class="row g-3">
-
-    {% for product in products %}
-
-    <div class="col-md-4">
-      <div class="card shadow-sm h-100">
-
-        <img src="{{ url_for('static',
-                              filename='uploads/' + (product.image or 'default_product.jpg')) }}"
-             class="card-img-top"
-             style="height:200px; object-fit:cover;">
-
-        <div class="card-body">
-
-          <h5>{{ product.name }}</h5>
-
-          <p><strong>Magsasaka:</strong>
-             {{ product.farmer.full_name or product.farmer.username }}
-          </p>
-
-          <p><strong>Lugar:</strong> {{ product.location }}</p>
-
-          <p><strong>Stock:</strong> {{ product.stock_quantity }} kg</p>
-
-          <h6 class="text-success">
-            ₱{{ product.price }}/kg
-          </h6>
-
-          <a href="{{ url_for('products.product_detail',
-                               product_id=product.id) }}"
-             class="btn btn-success btn-sm w-100">
-             Tingnan ang Produkto
-          </a>
-
-        </div>
-      </div>
-    </div>
-
-    {% else %}
-    <div class="col-12 text-center text-muted py-4">
-      Wala pang available na produkto.
-    </div>a{% extends "base.html" %}
-{% block title %}Buyer Dashboard{% endblock %}
-
-{% block content %}
-<div class="container py-4">
-
-  <h2 class="fw-bold mb-1">🛒 Buyer Dashboard</h2>
   <p class="text-muted mb-4">
     Maligayang pagbabalik,
     {{ current_user.full_name or current_user.username }}!
@@ -96,14 +47,15 @@
     {% for product in products %}
 
     <div class="col-md-4">
-
       <div class="card shadow-sm h-100">
 
+        <!-- IMAGE -->
         <img src="{{ url_for('static',
               filename='uploads/' + (product.image or 'default_product.jpg')) }}"
              class="card-img-top"
              style="height:200px; object-fit:cover;">
 
+        <!-- BODY -->
         <div class="card-body">
 
           <h5 class="card-title">
@@ -112,7 +64,7 @@
 
           <p class="mb-1">
             <strong>Magsasaka:</strong>
-            {{ product.farmer.full_name }}
+            {{ product.farmer.full_name or product.farmer.username }}
           </p>
 
           <p class="mb-1">
@@ -137,19 +89,14 @@
 
         </div>
       </div>
-
     </div>
 
     {% else %}
-      <div class="col-12 text-center text-muted py-4">
-        Wala pang available na produkto.
-      </div>
-    {% endfor %}
 
-  </div>
+    <div class="col-12 text-center text-muted py-4">
+      Wala pang available na produkto.
+    </div>
 
-</div>
-{% endblock %}
     {% endfor %}
 
   </div>

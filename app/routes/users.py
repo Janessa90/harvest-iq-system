@@ -59,9 +59,11 @@ def dashboard():
 
         print("FARMER PRODUCTS COUNT:", len(farmer_products))
 
+        # COMPUTE TOTAL REVENUE
         for p in farmer_products:
-            if p.stock_quantity and p.price:
-                total_revenue += p.stock_quantity * p.price
+            stock = p.stock_quantity or 0
+            price = p.price or 0
+            total_revenue += stock * price
 
     # ─────────────────────────────
     # ROLE-BASED TEMPLATE
@@ -97,17 +99,19 @@ def start_weigh():
 
     # ✅ remember which farmer initiated weighing
     session["active_farmer_id"] = current_user.id
-    print("ACTIVE FARMER SET:", session["active_farmer_id"])
+    print("ACTIVE FARMER SET:", session.get("active_farmer_id"))
 
     # ✅ trigger the SINGLE physical scale (device id = 3)
     if Device:
         device = Device.query.get(3)
+
         if device:
             device.weighing = True
             db.session.commit()
             print("✅ Device weighing set to TRUE")
         else:
             print("❌ Device ID 3 not found")
+
     else:
         print("⚠️ Device model missing — skipping device trigger")
 
@@ -122,8 +126,14 @@ def start_weigh():
 @login_required
 def stop_weigh():
 
+    print(f"🛑 STOP requested by farmer {current_user.id}")
+
+    # reset active farmer session
+    session.pop("active_farmer_id", None)
+
     if Device:
         device = Device.query.get(3)
+
         if device:
             device.weighing = False
             db.session.commit()
