@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app import db
 from app.models.weigh_logs import WeighLog
 from app.models.user import User
+from app.models.device import Device
 
 api_bp = Blueprint(
     "api",
@@ -9,12 +10,21 @@ api_bp = Blueprint(
     url_prefix="/api"
 )
 
-# ─────────────────────────
-# START WEIGHING
-# Dashboard → Hardware trigger
-# ─────────────────────────
+# =====================================================
+# 🔥 CONFIG — MUST MATCH YOUR ESP
+# =====================================================
+DEVICE_ID = 6  # ⚠️ ESP uses FARMER_ID = 6 → treated as device id
+
+# holds which farmer owns the next weight
+ACTIVE_FARMER_ID = None
+
+
+# =====================================================
+# START WEIGHING (Farmer clicks button)
+# =====================================================
 @api_bp.route("/start-weighing", methods=["POST"])
 def start_weighing():
+    global ACTIVE_FARMER_ID
 
     data = request.get_json() or {}
     farmer_id = data.get("farmer_id")
@@ -22,96 +32,96 @@ def start_weighing():
     if not farmer_id:
         return jsonify({"error": "Missing farmer_id"}), 400
 
-    user = User.query.get(farmer_id)
-
-    if not user:
+    farmer = User.query.get(farmer_id)
+    if not farmer:
         return jsonify({"error": "Farmer not found"}), 404
 
-    # Activate weighing flag
-    user.is_weighing = True
+    # ✅ remember who started weighing
+    ACTIVE_FARMER_ID = farmer_id
+
+    # ✅ TURN ON THE SCALE (CRITICAL)
+    device = Device.query.get(DEVICE_ID)
+    if device:
+        device.weighing = True
+    else:
+        # auto-create if missing (safety)
+        device = Device(id=DEVICE_ID, name="Main Scale", weighing=True)
+        db.session.add(device)
+
     db.session.commit()
 
-    print(f"[API] ✅ Start weighing triggered for Farmer ID: {farmer_id}")
+    print(f"[API] START → Farmer {farmer_id} | Device {DEVICE_ID}")
 
-    return jsonify({
-        "status": "started",
-        "farmer_id": farmer_id
-    })
+    return jsonify({"status": "started"})
 
 
-# ─────────────────────────
-# STOP WEIGHING (Manual Stop Button)
-# ─────────────────────────
+# =====================================================
+# STOP WEIGHING (manual stop button)
+# =====================================================
 @api_bp.route("/stop-weighing", methods=["POST"])
 def stop_weighing():
+    global ACTIVE_FARMER_ID
 
-    data = request.get_json() or {}
-    farmer_id = data.get("farmer_id")
+    device = Device.query.get(DEVICE_ID)
+    if device:
+        device.weighing = False
 
-    user = User.query.get(farmer_id)
-
-    if not user:
-        return jsonify({"error": "Farmer not found"}), 404
-
-    user.is_weighing = False
+    ACTIVE_FARMER_ID = None
     db.session.commit()
 
-    print(f"[API] 🛑 Weighing stopped for Farmer ID: {farmer_id}")
+    print("[API] STOP weighing")
 
     return jsonify({"status": "stopped"})
 
 
-# ─────────────────────────
-# CHECK WEIGHING
-# Hardware polling endpoint
-# ─────────────────────────
-@api_bp.route("/check-weighing/<int:farmer_id>")
-def check_weighing(farmer_id):
+# =====================================================
+# ESP POLLING ENDPOINT
+# =====================================================
+@api_bp.route("/check-weighing/<int:device_id>")
+def check_weighing(device_id):
 
-    user = User.query.get(farmer_id)
+    device = Device.query.get(device_id)
 
-    if user and user.is_weighing:
+    if device and device.weighing:
         return jsonify({"weighing": True})
 
     return jsonify({"weighing": False})
 
 
-# ─────────────────────────
-# SUBMIT WEIGHT
-# Hardware → Database
-# ─────────────────────────
+# =====================================================
+# ESP SENDS FINAL WEIGHT
+# =====================================================
 @api_bp.route("/submit-weight", methods=["POST"])
 def submit_weight():
+    global ACTIVE_FARMER_ID
 
     data = request.get_json() or {}
-
-    print("[API] Incoming weight data:", data)
-
-    farmer_id = data.get("farmer_id")
     weight = data.get("weight")
 
-    if not farmer_id or weight is None:
-        return jsonify({"error": "Missing data"}), 400
+    print("[API] Incoming weight:", data)
 
-    farmer = User.query.get(farmer_id)
+    # must have active farmer
+    if ACTIVE_FARMER_ID is None:
+        return jsonify({"error": "No active farmer"}), 400
 
+    farmer = User.query.get(ACTIVE_FARMER_ID)
     if not farmer:
         return jsonify({"error": "Farmer not found"}), 404
 
-    # Validate weight
     try:
         weight_value = float(weight)
-    except:
-        return jsonify({"error": "Invalid weight value"}), 400
+    except Exception:
+        return jsonify({"error": "Invalid weight"}), 400
 
     if weight_value <= 0:
-        return jsonify({"error": "Weight must be greater than 0"}), 400
+        return jsonify({"error": "Weight must be > 0"}), 400
 
-    # Fallback values (VERY IMPORTANT para walang crash sa approve)
+    # =========================================
+    # build product info from farmer profile
+    # =========================================
     product_name = farmer.main_product or "Unnamed Product"
     price_value = farmer.price_per_kg or 0
 
-    # Create weigh log
     log = WeighLog(
         farmer_id=farmer.id,
         farmer_name=farmer.username,
@@ -120,22 +130,22 @@ def submit_weight():
         city=farmer.city,
         barangay=farmer.barangay,
         full_address=farmer.full_address,
-        product=product_name,              # SAFE VALUE
-        suggested_price=price_value,       # SAFE VALUE
+        product=product_name,
+        suggested_price=price_value,
         weight=weight_value,
         status="pending"
     )
 
-    # Reset weighing flag
-    farmer.is_weighing = False
+    # ✅ STOP DEVICE AFTER SUCCESS
+    device = Device.query.get(DEVICE_ID)
+    if device:
+        device.weighing = False
+
+    ACTIVE_FARMER_ID = None
 
     db.session.add(log)
     db.session.commit()
 
-    print(f"[API] ✅ Weight saved → Farmer {farmer.id} | {weight_value} kg")
+    print(f"[API] SAVED → Farmer {farmer.id} | {weight_value} kg")
 
-    return jsonify({
-        "message": "Weight submitted successfully",
-        "farmer_id": farmer.id,
-        "weight": weight_value
-    })
+    return jsonify({"message": "Weight submitted successfully"})

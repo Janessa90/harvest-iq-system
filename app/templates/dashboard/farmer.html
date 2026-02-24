@@ -157,55 +157,61 @@ document.addEventListener("DOMContentLoaded", function () {
   const stopBtn  = document.getElementById("stopWeighBtn");
   const statusDiv = document.getElementById("weighStatus");
 
+  if (!startBtn || !stopBtn) return;
+
+  const farmerId = startBtn.dataset.farmerId;
+
   // ================= START =================
-  if (startBtn) {
+  startBtn.addEventListener("click", async function () {
 
-    const farmerId = startBtn.dataset.farmerId;
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    startBtn.innerText = "Starting...";
 
-    startBtn.addEventListener("click", async function () {
+    try {
 
-      startBtn.disabled = true;
-      startBtn.innerText = "Starting...";
+      const res = await fetch("/api/start-weighing", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          farmer_id: Number(farmerId)
+        })
+      });
 
-      try {
+      const data = await res.json();
 
-        await fetch("/api/start-weighing", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            farmer_id: Number(farmerId)
-          })
-        });
-
+      if (data.status === "started") {
         statusDiv.innerHTML = `
           <div class="alert alert-success">
             ✅ Start command sent to weighing hardware.
           </div>
         `;
-
-      } catch (err) {
-
-        statusDiv.innerHTML = `
-          <div class="alert alert-danger">
-            ❌ Failed to start weighing.
-          </div>
-        `;
-
-        startBtn.disabled = false;
-        startBtn.innerText = "⚖ Simulan ang Pagtitimbang";
       }
 
-    });
-  }
+      startBtn.innerText = "⚖ Simulan ang Pagtitimbang";
+
+    } catch (err) {
+
+      statusDiv.innerHTML = `
+        <div class="alert alert-danger">
+          ❌ Failed to start weighing.
+        </div>
+      `;
+
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      startBtn.innerText = "⚖ Simulan ang Pagtitimbang";
+    }
+
+  });
+
 
   // ================= STOP =================
-  if (stopBtn) {
+  stopBtn.addEventListener("click", async function () {
 
-    const farmerId = stopBtn.dataset.farmerId;
-
-    stopBtn.addEventListener("click", async function () {
+    try {
 
       await fetch("/api/stop-weighing", {
         method: "POST",
@@ -223,13 +229,19 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
       `;
 
-      if (startBtn) {
-        startBtn.disabled = false;
-        startBtn.innerText = "⚖ Simulan ang Pagtitimbang";
-      }
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
 
-    });
-  }
+    } catch (err) {
+
+      statusDiv.innerHTML = `
+        <div class="alert alert-danger">
+          ❌ Failed to stop weighing.
+        </div>
+      `;
+    }
+
+  });
 
 });
 </script>

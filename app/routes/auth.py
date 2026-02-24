@@ -20,31 +20,23 @@ auth_bp = Blueprint(
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
 
-    # If already logged in
     if current_user.is_authenticated:
-        print("ALREADY LOGGED IN ROLE:", current_user.role)
 
         if current_user.role == "admin":
             return redirect(url_for("admin.dashboard"))
 
-        elif current_user.role == "farmer":
-            return redirect(url_for("users.dashboard"))
+        return redirect(url_for("users.dashboard"))
 
-        else:
-            return redirect(url_for("users.dashboard"))
-
-    # Handle POST login
     if request.method == "POST":
 
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
-        remember = request.form.get("remember", False)
 
         user = User.query.filter_by(username=username).first()
 
         if user and user.check_password(password):
 
-            login_user(user, remember=bool(remember))
+            login_user(user)
 
             flash(
                 f"Maligayang pagbabalik, "
@@ -52,25 +44,10 @@ def login():
                 "success"
             )
 
-            # 🔍 DEBUG PRINT
-            print("LOGIN ROLE:", user.role)
-
             if user.role == "admin":
-                print("→ ADMIN REDIRECT")
                 return redirect(url_for("admin.dashboard"))
 
-            elif user.role == "farmer":
-                print("→ FARMER REDIRECT")
-                return redirect(url_for("users.dashboard"))
-
-            elif user.role == "buyer":
-                print("→ BUYER REDIRECT")
-                return redirect(url_for("users.dashboard"))
-
-            else:
-                print("→ UNKNOWN ROLE")
-                flash("Unknown role detected.", "danger")
-                return redirect(url_for("auth.login"))
+            return redirect(url_for("users.dashboard"))
 
         else:
             flash("Maling username o password.", "danger")
@@ -90,7 +67,7 @@ def register():
     if request.method == "GET":
         return render_template("auth/register.html")
 
-    # COMMON DATA
+    # COMMON
     role = request.form.get("role", "buyer")
     full_name = request.form.get("full_name", "").strip()
     phone = request.form.get("phone", "").strip()
@@ -123,6 +100,7 @@ def register():
     elif role == "farmer":
 
         username = request.form.get("username", "").strip()
+        main_product = request.form.get("main_product", "").strip()
         price_per_kg = request.form.get("price_per_kg", 0)
 
         if User.query.filter_by(username=username).first():
@@ -139,7 +117,11 @@ def register():
             city=request.form.get("city"),
             barangay=request.form.get("barangay"),
             full_address=request.form.get("full_address"),
+
+            # ✅ IMPORTANT (para di Unnamed Product)
+            main_product=main_product,
             price_per_kg=float(price_per_kg or 0),
+
             status="approved"
         )
 
@@ -147,18 +129,15 @@ def register():
         flash("Invalid role selected.", "danger")
         return render_template("auth/register.html")
 
-    # PASSWORD HASH
+    # PASSWORD
     user.set_password(password)
 
-    # SAVE
     try:
         db.session.add(user)
         db.session.commit()
 
-        print("REGISTERED USER ROLE:", user.role)
-
         flash(
-            f"Matagumpay na naka-register, {full_name or 'User'}!",
+            f"Matagumpay na naka-register, {full_name}!",
             "success"
         )
 
@@ -168,12 +147,12 @@ def register():
         db.session.rollback()
         print("Commit error:", e)
 
-        flash("Registration failed. Try again.", "danger")
+        flash("Registration failed.", "danger")
         return render_template("auth/register.html")
 
 
 # ─────────────────────────────────────────────
-# FORGOT PASSWORD
+# ✅ FORGOT PASSWORD (FIX FOR YOUR ERROR)
 # ─────────────────────────────────────────────
 @auth_bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -192,10 +171,7 @@ def forgot_password():
 @login_required
 def logout():
 
-    print("LOGOUT ROLE:", current_user.role)
-
     logout_user()
-
     flash("Ikaw ay matagumpay na naka-logout.", "success")
 
     return redirect(url_for("auth.login"))
