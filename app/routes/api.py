@@ -189,3 +189,31 @@ def submit_weight():
     return jsonify({
         "message": "Weight submitted successfully"
     })
+# =====================================================
+# PRODUCT SEARCH (AJAX)
+# =====================================================
+@api_bp.route("/search-products")
+def search_products():
+
+    query = request.args.get("q", "")
+
+    if not query:
+        return jsonify([])
+
+    results = WeighLog.query.filter(
+        WeighLog.product.ilike(f"%{query}%"),
+        WeighLog.status == "approved"
+    ).all()
+
+    data = []
+
+    for r in results:
+        data.append({
+            "name": r.product,
+            "farmer": r.farmer_name,
+            "location": f"{r.city}, {r.province}",
+            "stock": r.weight,
+            "price": r.suggested_price
+        })
+
+    return jsonify(data)

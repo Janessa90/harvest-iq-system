@@ -20,11 +20,13 @@
         🤖 AI Paghahanap ng Produkto
       </h5>
 
-      <form action="{{ url_for('search.search') }}" method="GET">
+      <!-- ✅ Added id -->
+      <form id="searchForm">
         <div class="input-group">
 
           <input type="text"
                  name="q"
+                 id="searchInput"
                  class="form-control"
                  placeholder="Maghanap hal. kamatis..."
                  required>
@@ -39,23 +41,25 @@
     </div>
   </div>
 
+  <!-- ✅ SEARCH RESULTS (ADDED, hidden by default) -->
+  <div id="searchResults" class="row g-3 mb-4" style="display:none;"></div>
+
   <!-- PRODUCTS -->
   <h4 class="fw-bold mb-3">🌾 Available Products</h4>
 
-  <div class="row g-3">
+  <!-- ✅ Wrapped default products -->
+  <div id="defaultProducts" class="row g-3">
 
     {% for product in products %}
 
     <div class="col-md-4">
       <div class="card shadow-sm h-100">
 
-        <!-- IMAGE -->
         <img src="{{ url_for('static',
               filename='uploads/' + (product.image or 'default_product.jpg')) }}"
              class="card-img-top"
              style="height:200px; object-fit:cover;">
 
-        <!-- BODY -->
         <div class="card-body">
 
           <h5 class="card-title">
@@ -102,4 +106,71 @@
   </div>
 
 </div>
+
+
+<!-- ✅ AJAX SEARCH SCRIPT (ADDED) -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const form = document.getElementById("searchForm");
+  const input = document.getElementById("searchInput");
+  const resultsDiv = document.getElementById("searchResults");
+  const defaultDiv = document.getElementById("defaultProducts");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const query = input.value.trim();
+    if (!query) return;
+
+    resultsDiv.style.display = "flex";
+    defaultDiv.style.display = "none";
+
+    resultsDiv.innerHTML = "<p>Searching...</p>";
+
+    try {
+
+      // ✅ FIXED BACKTICKS
+      const res = await fetch(`/api/search-products?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+
+      resultsDiv.innerHTML = "";
+
+      if (data.length === 0) {
+        resultsDiv.innerHTML =
+          "<div class='col-12 text-muted'>Walang nahanap.</div>";
+        return;
+      }
+
+      data.forEach(product => {
+        resultsDiv.innerHTML += `
+          <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+
+                <h5>${product.name}</h5>
+
+                <p><strong>Magsasaka:</strong> ${product.farmer}</p>
+                <p><strong>Lugar:</strong> ${product.location}</p>
+                <p><strong>Stock:</strong> ${product.stock} kg</p>
+
+                <h6 class="text-success fw-bold">
+                  ₱${product.price}/kg
+                </h6>
+
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+    } catch (err) {
+      resultsDiv.innerHTML =
+        "<div class='col-12 text-danger'>Search failed.</div>";
+    }
+
+  });
+
+});
+</script>
 {% endblock %}
