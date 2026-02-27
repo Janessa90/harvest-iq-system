@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}All Orders{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+<h2 class="fw-bold mb-4">📦 Buyer Orders</h2>
+
+<table class="table table-bordered">
+
+<thead>
+<tr>
+  <th>ID</th>
+  <th>Buyer</th>
+  <th>Total</th>
+  <th>Status</th>
+  <th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+{% for order in orders %}
+<tr>
+
+<td>#{{ order.id }}</td>
+<td>{{ order.buyer.full_name }}</td>
+<td>₱{{ order.total_amount }}</td>
+<td>
+  <span class="badge bg-info">
+    {{ order.status }}
+  </span>
+</td>
+
+<td>
+
+{% if order.status == "pending" %}
+<a href="{{ url_for('admin.approve_order', order_id=order.id) }}"
+   class="btn btn-success btn-sm">
+   Confirm
+</a>
+{% endif %}
+
+{% if order.status == "to_ship" %}
+<a href="{{ url_for('admin.ship_order', order_id=order.id) }}"
+   class="btn btn-primary btn-sm">
+   Ship
+</a>
+{% endif %}
+
+</td>
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</div>
+{% endblock %}

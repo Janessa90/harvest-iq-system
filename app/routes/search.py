@@ -1,39 +1,36 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, jsonify
 from app.models.product import Product
-from sqlalchemy import or_
 
-search_bp = Blueprint(
-    "search",
-    __name__,
-    url_prefix="/search"
-)
+search_bp = Blueprint("search", __name__)
 
+@search_bp.route("/api/search-products")
+def search_products():
 
-@search_bp.route("/")
-def search():
+    query = request.args.get("q", "")
 
-    query = request.args.get("q", "").strip()
-
-    if not query:
-        return render_template(
-            "search/results.html",
-            products=[],
-            query=query
-        )
-
-    # 🔎 SIMPLE AI-LIKE MATCHING
     products = Product.query.filter(
-        Product.status == "approved",
-        Product.is_available == True,
-        or_(
-            Product.name.ilike(f"%{query}%"),
-            Product.description.ilike(f"%{query}%"),
-            Product.location.ilike(f"%{query}%")
-        )
+        Product.name.ilike(f"%{query}%")
     ).all()
 
-    return render_template(
-        "search/results.html",
-        products=products,
-        query=query
-    )
+    results = []
+
+    for p in products:
+
+        farmer = p.farmer
+
+        location = "Unknown"
+
+        if farmer:
+            location = f"{farmer.barangay or ''}, {farmer.city or ''}, {farmer.province or ''}"
+
+        results.append({
+            "id": p.id,
+            "name": p.name,
+            "price": p.price,
+            "stock": p.stock_quantity,
+            "farmer": farmer.full_name if farmer else "Unknown",
+            "location": location,
+            "image": p.image
+        })
+
+    return jsonify(results)

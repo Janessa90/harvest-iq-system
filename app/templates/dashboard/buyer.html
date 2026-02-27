@@ -1,176 +1,231 @@
 {% extends "base.html" %}
-{% block title %}Buyer Dashboard{% endblock %}
+
+{% block title %}
+Ebili
+{% endblock %}
 
 {% block content %}
 <div class="container py-4">
 
-  <!-- HEADER -->
-  <h2 class="fw-bold mb-1">🛒 Buyer Dashboard</h2>
+<!-- ================= HEADER ================= -->
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
 
-  <p class="text-muted mb-4">
-    Maligayang pagbabalik,
-    {{ current_user.full_name or current_user.username }}!
-  </p>
-
-  <!-- AI SEARCH -->
-  <div class="card shadow-sm border-0 mb-4">
-    <div class="card-body">
-
-      <h5 class="fw-bold mb-3">
-        🤖 AI Paghahanap ng Produkto
-      </h5>
-
-      <!-- ✅ Added id -->
-      <form id="searchForm">
-        <div class="input-group">
-
-          <input type="text"
-                 name="q"
-                 id="searchInput"
-                 class="form-control"
-                 placeholder="Maghanap hal. kamatis..."
-                 required>
-
-          <button class="btn btn-success">
-            🔍 Maghanap
-          </button>
-
-        </div>
-      </form>
-
-    </div>
+  <div>
+    <h2 class="fw-bold mb-1">🛒 Ebili</h2>
+    <p class="text-muted mb-0">
+      Maligayang pagbabalik,
+      {{ current_user.full_name or current_user.username }}!
+    </p>
   </div>
 
-  <!-- ✅ SEARCH RESULTS (ADDED, hidden by default) -->
-  <div id="searchResults" class="row g-3 mb-4" style="display:none;"></div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('orders.my_orders') }}"
+       class="btn btn-outline-dark">
+       📦 My Orders
+    </a>
 
-  <!-- PRODUCTS -->
-  <h4 class="fw-bold mb-3">🌾 Available Products</h4>
-
-  <!-- ✅ Wrapped default products -->
-  <div id="defaultProducts" class="row g-3">
-
-    {% for product in products %}
-
-    <div class="col-md-4">
-      <div class="card shadow-sm h-100">
-
-        <img src="{{ url_for('static',
-              filename='uploads/' + (product.image or 'default_product.jpg')) }}"
-             class="card-img-top"
-             style="height:200px; object-fit:cover;">
-
-        <div class="card-body">
-
-          <h5 class="card-title">
-            {{ product.name }}
-          </h5>
-
-          <p class="mb-1">
-            <strong>Magsasaka:</strong>
-            {{ product.farmer.full_name or product.farmer.username }}
-          </p>
-
-          <p class="mb-1">
-            <strong>Lugar:</strong>
-            {{ product.location }}
-          </p>
-
-          <p class="mb-1">
-            <strong>Stock:</strong>
-            {{ product.stock_quantity }} kg
-          </p>
-
-          <h6 class="text-success fw-bold">
-            ₱{{ product.price }}/kg
-          </h6>
-
-          <a href="{{ url_for('products.product_detail',
-                               product_id=product.id) }}"
-             class="btn btn-success btn-sm mt-2 w-100">
-             Tingnan ang Produkto
-          </a>
-
-        </div>
-      </div>
-    </div>
-
-    {% else %}
-
-    <div class="col-12 text-center text-muted py-4">
-      Wala pang available na produkto.
-    </div>
-
-    {% endfor %}
-
+    <a href="{{ url_for('cart.view_cart') }}"
+       class="btn btn-outline-success">
+       🛒 Cart
+    </a>
   </div>
 
 </div>
 
 
-<!-- ✅ AJAX SEARCH SCRIPT (ADDED) -->
+<!-- ================= SEARCH ================= -->
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+
+    <div class="input-group">
+      <input type="text"
+             id="searchInput"
+             class="form-control"
+             placeholder="Maghanap hal. kamatis...">
+
+      <button class="btn btn-success">
+        🔍 Maghanap
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================= SEARCH RESULTS ================= -->
+<div id="searchResults"
+     class="row g-3 mb-4"
+     style="display:none;">
+</div>
+
+
+<!-- ================= DEFAULT PRODUCTS ================= -->
+<h4 class="fw-bold mb-3">🌾 Available Products</h4>
+
+<div id="defaultProducts" class="row g-3">
+
+{% for product in products %}
+<div class="col-md-4 col-lg-3">
+
+<div class="card shadow-sm h-100">
+
+<img src="{{ url_for('static',
+filename='uploads/' + (product.image or 'default_product.jpg')) }}"
+class="card-img-top"
+style="height:200px;object-fit:cover;">
+
+<div class="card-body d-flex flex-column">
+
+<h5>{{ product.name }}</h5>
+
+<p class="mb-1">
+<strong>Seller:</strong>
+{{ product.farmer.full_name or product.farmer.username }}
+</p>
+
+<p class="mb-1">
+<strong>Lugar:</strong>
+{{ product.location }}
+</p>
+
+<p class="mb-2">
+<strong>Stock:</strong>
+{{ product.stock_quantity }} kg
+</p>
+
+<h6 class="text-success fw-bold">
+₱{{ product.price }}/kg
+</h6>
+
+<form method="POST"
+action="{{ url_for('cart.add_to_cart',
+product_id=product.id) }}"
+class="mt-auto">
+
+<input type="hidden" name="quantity" value="1">
+
+<button class="btn btn-success w-100">
+Add to Cart
+</button>
+
+</form>
+
+</div>
+</div>
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+
+<!-- ================= LIVE SEARCH ================= -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-  const form = document.getElementById("searchForm");
-  const input = document.getElementById("searchInput");
-  const resultsDiv = document.getElementById("searchResults");
-  const defaultDiv = document.getElementById("defaultProducts");
+const input = document.getElementById("searchInput");
+const resultsDiv = document.getElementById("searchResults");
+const defaultDiv = document.getElementById("defaultProducts");
 
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+let timeout = null;
 
-    const query = input.value.trim();
-    if (!query) return;
+input.addEventListener("keyup", () => {
 
-    resultsDiv.style.display = "flex";
-    defaultDiv.style.display = "none";
+clearTimeout(timeout);
 
-    resultsDiv.innerHTML = "<p>Searching...</p>";
+const query = input.value.trim();
 
-    try {
+if(query.length === 0){
+    resultsDiv.style.display="none";
+    defaultDiv.style.display="flex";
+    return;
+}
 
-      // ✅ FIXED BACKTICKS
-      const res = await fetch(`/api/search-products?q=${encodeURIComponent(query)}`);
-      const data = await res.json();
+timeout = setTimeout(async () => {
 
-      resultsDiv.innerHTML = "";
+resultsDiv.style.display="flex";
+defaultDiv.style.display="none";
 
-      if (data.length === 0) {
-        resultsDiv.innerHTML =
-          "<div class='col-12 text-muted'>Walang nahanap.</div>";
-        return;
-      }
+resultsDiv.innerHTML =
+"<div class='col-12'>Searching...</div>";
 
-      data.forEach(product => {
-        resultsDiv.innerHTML += `
-          <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-              <div class="card-body">
+try{
 
-                <h5>${product.name}</h5>
+const res = await fetch(
+                `/search/api/search-products?q=${encodeURIComponent(query)}`
+            );
 
-                <p><strong>Magsasaka:</strong> ${product.farmer}</p>
-                <p><strong>Lugar:</strong> ${product.location}</p>
-                <p><strong>Stock:</strong> ${product.stock} kg</p>
+const data = await res.json();
 
-                <h6 class="text-success fw-bold">
-                  ₱${product.price}/kg
-                </h6>
+resultsDiv.innerHTML="";
 
-              </div>
-            </div>
-          </div>
-        `;
-      });
+if(data.length === 0){
+resultsDiv.innerHTML =
+"<div class='col-12 text-muted'>Walang nahanap.</div>";
+return;
+}
 
-    } catch (err) {
-      resultsDiv.innerHTML =
-        "<div class='col-12 text-danger'>Search failed.</div>";
-    }
+data.forEach(product => {
 
-  });
+resultsDiv.innerHTML += `
+<div class="col-md-4 col-lg-3">
+
+<div class="card shadow-sm h-100">
+
+<img src="/static/uploads/${product.image || 'default_product.jpg'}"
+class="card-img-top"
+style="height:200px;object-fit:cover;">
+
+<div class="card-body d-flex flex-column">
+
+<h5>${product.name}</h5>
+
+<p class="mb-1">
+<strong>Seller:</strong>
+${product.farmer}
+</p>
+
+<p class="mb-1">
+<strong>Lugar:</strong>
+${product.location}
+</p>
+
+<p class="mb-2">
+<strong>Stock:</strong>
+${product.stock} kg
+</p>
+
+<h6 class="text-success fw-bold">
+₱${product.price}/kg
+</h6>
+
+<form method="POST"
+action="/cart/add/${product.id}"
+class="mt-auto">
+
+<input type="hidden" name="quantity" value="1">
+
+<button class="btn btn-success w-100">
+Add to Cart
+</button>
+
+</form>
+
+</div>
+</div>
+</div>
+`;
+});
+
+}catch(e){
+resultsDiv.innerHTML =
+"<div class='text-danger'>Search failed</div>";
+}
+
+},300);
 
 });
+});
 </script>
+
 {% endblock %}

@@ -3,11 +3,11 @@ TL = {
     # ── General ──────────────────────────────────────────────────────────────
     'app_name':             'Harvest IQ',
     'tagline':              'Sariwa Mula sa Bukid',
-    'home':                 'Tahanan',
+    'home':                 'Harvest-IQ',
     'about':                'Tungkol Sa Amin',
     'contact':              'Makipag-ugnayan',
     'search':               'Maghanap',
-    'search_placeholder':   'Maghanap ng produkto, magsasaka...',
+    'search_placeholder':   'Maghanap ng produkto, Ebenta...',
     'loading':              'Naglo-load...',
     'save':                 'I-save',
     'cancel':               'Kanselahin',
@@ -59,8 +59,8 @@ TL = {
     'phone':                        'Numero ng Telepono',
     'region':                       'Rehiyon',
     'select_region':                'Pumili ng rehiyon...',
-    'role_buyer':                   'Ako ay Mamimili',
-    'role_farmer':                  'Ako ay Magsasaka',
+    'role_buyer':                   'Ebili',
+    'role_farmer':                  'Ebenta',
     'agree_terms':                  'Sumasang-ayon ako sa',
     'terms_of_service':             'Mga Tuntunin ng Serbisyo',
     'privacy_policy':               'Patakaran sa Privacy',
@@ -83,10 +83,10 @@ TL = {
     'hero_badge':           '🌱 Sariwa Mula sa mga Bukid ng Pilipinas',
     'hero_headline_1':      'Sariwang Produkto Mula sa Bukid,',
     'hero_headline_2':      'Diretso sa Inyong Pintuan',
-    'hero_subtext':         'Kumonekta sa mga lokal na magsasakang Pilipino. Bumili ng sariwa, suportahan ang lokal, kumain nang malusog.',
+    'hero_subtext':         'Kumonekta sa mga lokal na farmer na Pilipino. Bumili ng sariwa, suportahan ang lokal, kumain nang malusog.',
     'hero_shop_btn':        'Mamili Na',
-    'hero_sell_btn':        'Magbenta bilang Magsasaka',
-    'hero_stat_farmers':    'Magsasaka',
+    'hero_sell_btn':        'Ebenta',
+    'hero_stat_farmers':    'Ebenta',
     'hero_stat_products':   'Produkto',
     'hero_stat_buyers':     'Masasayang Mamimili',
 
@@ -136,7 +136,7 @@ TL = {
     'no_products':          'Walang nahanap na produkto. Subukan ang ibang filter.',
     'no_products_yet':      'Wala pang produkto.',
     'first_product':        'Idagdag ang iyong unang produkto!',
-    'be_first_farmer':      'Maging unang magsasakang maglista!',
+    'be_first_farmer':      'Maging unang farmer na maglista!',
     'views':                'mga view',
     'reviews':              'mga review',
     'min_order_label':      'Pinakamaliit na order:',
@@ -243,7 +243,7 @@ TL = {
     'payment_refunded':     'Naibalik ang Bayad',
 
     # ── Dashboard — Farmer ────────────────────────────────────────────────────
-    'farmer_dashboard':     '👨‍🌾 Dashboard ng Magsasaka',
+    'farmer_dashboard':     '👨‍🌾 Ebenta Dashboard',
     'welcome_farmer':       'Maligayang pagdating, {name}',
     'total_products':       'Mga Produkto',
     'recent_orders':        'Mga Kamakailang Order',
@@ -274,7 +274,7 @@ TL = {
 
     # ── Farmer Store ──────────────────────────────────────────────────────────
     'farmer_store':         'Bukid ni {name}',
-    'products_from':        'Mga Produkto mula sa Magsasakang Ito',
+    'products_from':        'Mga Produkto mula sa Local na Farmer',
     'no_store_products':    'Wala pang nakalista na produkto.',
 
     # ── Profile ───────────────────────────────────────────────────────────────
@@ -285,8 +285,8 @@ TL = {
     'farm_bio_ph':          'Sabihin sa mga mamimili ang tungkol sa iyong bukid, mga espesyalidad, paraan ng pagtatanim...',
     'save_profile':         'I-save ang Profile',
     'profile_updated':      'Na-update ang profile!',
-    'role_label_farmer':    '👨‍🌾 Magsasaka',
-    'role_label_buyer':     '🛒 Mamimili',
+    'role_label_farmer':    '👨‍🌾 Ebenta',
+    'role_label_buyer':     '🛒 Ebili',
 
     # ── Search ────────────────────────────────────────────────────────────────
     'search_results_for':   'Mga resulta para sa "{q}"',
@@ -295,29 +295,29 @@ TL = {
     'browse_all':           'I-browse ang Lahat ng Produkto',
 
     # ── Footer ────────────────────────────────────────────────────────────────
-    'footer_tagline':       'Ikinokonekta ang mga Pilipinong magsasaka nang direkta sa mga mamimili. Sariwa, patas, at lokal.',
+    'footer_tagline':       'Ikinokonekta ang mga Pilipinong farmer nang direkta sa mga mamimili. Sariwa, patas, at lokal.',
     'footer_shop':          'Tindahan',
     'footer_all_products':  'Lahat ng Produkto',
     'footer_organic':       'Organiko',
     'footer_sell':          'Magbenta',
-    'footer_become_farmer': 'Maging Magsasaka',
+    'footer_become_farmer': 'Maging Isang Seller',
     'footer_seller_guide':  'Gabay para sa Nagbebenta',
     'footer_payment':       'Mga Paraan ng Pagbabayad',
-    'footer_copyright':     '© {year} Harvest IQ. Lahat ng karapatan ay nakalaan. | Ginawa nang may ❤️ para sa mga Pilipinong Magsasaka',
+    'footer_copyright':     '© {year} Harvest IQ. Lahat ng karapatan ay nakalaan. | Ginawa nang may ❤️ para sa mga Pilipinong Farmer',
 
     # ── Why Harvest IQ ────────────────────────────────────────────────────────
     'why_title':            'Bakit Piliin ang Harvest IQ?',
     'why_fresh':            '100% Sariwa',
     'why_fresh_sub':        'Direkta mula sa bukid, walang tagapamagitan.',
     'why_fair':             'Makatarungang Presyo',
-    'why_fair_sub':         'Ang mga magsasaka ang nagtatatakda ng kanilang presyo. Patas para sa lahat.',
+    'why_fair_sub':         'Ang mga farmer ang nagtatatakda ng kanilang presyo. Patas para sa lahat.',
     'why_fast':             'Mabilis na Pagpapadala',
     'why_fast_sub':         'Mula sa bukid hanggang sa inyong mesa sa loob ng 1-3 araw.',
     'why_secure':           'Ligtas na Pagbabayad',
     'why_secure_sub':       'COD, GCash, Maya, at marami pa.',
 
     # ── Meet Farmers ──────────────────────────────────────────────────────────
-    'meet_farmers':         'Kilalanin ang Aming mga Magsasaka',
+    'meet_farmers':         'Kilalanin ang Aming mga Farmer',
 
     # ── Errors ───────────────────────────────────────────────────────────────
     'err_404_title':        'Hindi Nahanap ang Pahina',
@@ -330,8 +330,8 @@ TL = {
 
     # ── Flash / System Messages ───────────────────────────────────────────────
     'msg_unauthorized':         'Hindi awtorisado.',
-    'msg_farmers_only':         'Ang mga magsasaka lamang ang maaaring magdagdag ng mga produkto.',
-    'msg_farmers_only_page':    'Ang mga magsasaka lamang ang makakatingin sa pahinang ito.',
+    'msg_farmers_only':         'Ang mga farmer lamang ang maaaring magdagdag ng mga produkto.',
+    'msg_farmers_only_page':    'Ang mga farmer lamang ang makakatingin sa pahinang ito.',
     'msg_own_products':         'Maaari ka lamang mag-edit ng iyong sariling mga produkto.',
     'msg_product_added':        'Matagumpay na nailista ang produkto!',
     'msg_product_updated':      'Na-update ang produkto!',

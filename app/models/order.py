@@ -8,33 +8,33 @@ from datetime import datetime
 class Order(db.Model):
     __tablename__ = "orders"
 
-    # PRIMARY KEY
     id = db.Column(db.Integer, primary_key=True)
 
-    # ─────────────────────────────
-    # BUYER RELATION
-    # ─────────────────────────────
+    # BUYER
     buyer_id = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
         nullable=False
     )
 
-    # Relationship → allows current_user.orders
     buyer = db.relationship(
         "User",
         backref="orders",
         lazy=True
     )
 
-    # ─────────────────────────────
-    # ORDER INFO
-    # ─────────────────────────────
+    # STATUS FLOW
     status = db.Column(
         db.String(30),
         default="pending"
     )
-    # pending / confirmed / processing / shipped / delivered / cancelled / refunded
+    """
+    pending     = waiting admin confirmation
+    to_ship     = approved by admin
+    to_receive  = shipped by farmer
+    completed   = received by buyer
+    cancelled   = cancelled
+    """
 
     total_amount = db.Column(
         db.Float,
@@ -55,13 +55,11 @@ class Order(db.Model):
         db.String(50),
         default="cod"
     )
-    # cod / gcash / maya / card
 
     payment_status = db.Column(
         db.String(30),
         default="unpaid"
     )
-    # unpaid / paid / refunded
 
     payment_reference = db.Column(
         db.String(200)
@@ -71,9 +69,6 @@ class Order(db.Model):
         db.Text
     )
 
-    # ─────────────────────────────
-    # TIMESTAMPS
-    # ─────────────────────────────
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -85,9 +80,7 @@ class Order(db.Model):
         onupdate=datetime.utcnow
     )
 
-    # ─────────────────────────────
-    # RELATIONSHIPS
-    # ─────────────────────────────
+    # RELATIONSHIP
     items = db.relationship(
         "OrderItem",
         backref="order",
@@ -95,9 +88,6 @@ class Order(db.Model):
         cascade="all, delete-orphan"
     )
 
-    # ─────────────────────────────
-    # COMPUTED
-    # ─────────────────────────────
     @property
     def item_count(self):
         return sum(item.quantity for item in self.items)
@@ -108,7 +98,6 @@ class Order(db.Model):
 
     def __repr__(self):
         return f"<Order #{self.id} - {self.status}>"
-
 
 
 # ─────────────────────────────────────────────
@@ -131,6 +120,13 @@ class OrderItem(db.Model):
         nullable=False
     )
 
+    # VERY IMPORTANT → Farmer view
+    farmer_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False
+    )
+
     quantity = db.Column(
         db.Integer,
         nullable=False
@@ -141,18 +137,12 @@ class OrderItem(db.Model):
         nullable=False
     )
 
-    # ─────────────────────────────
-    # RELATIONSHIP → Product
-    # ─────────────────────────────
     product = db.relationship(
         "Product",
         backref="order_items",
         lazy=True
     )
 
-    # ─────────────────────────────
-    # COMPUTED
-    # ─────────────────────────────
     @property
     def subtotal(self):
         return self.quantity * self.unit_price

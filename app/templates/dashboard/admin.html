@@ -4,111 +4,170 @@
 {% block content %}
 <div class="container py-4">
 
-  <h2 class="fw-bold mb-2">🛠 Admin Dashboard</h2>
-  <p class="text-muted mb-4">
-    Approve farmer weighed products
-  </p>
+<h2 class="fw-bold mb-2">🛠 Admin Dashboard</h2>
+<p class="text-muted mb-4">
+Approve farmer weighed products
+</p>
 
-  <div class="card shadow-sm border-0">
+<!-- ================= WEIGH LOGS ================= -->
+<div class="card shadow-sm border-0 mb-4">
 
-    <div class="card-header fw-bold">
-      Pending Weigh Logs
-    </div>
+<div class="card-header fw-bold">
+Pending Weigh Logs
+</div>
 
-    <div class="card-body p-0">
+<div class="card-body p-0">
 
-      {% if logs %}
-      <div class="table-responsive">
+{% if logs %}
+<div class="table-responsive">
 
-      <table class="table mb-0 table-hover align-middle">
+<table class="table mb-0 table-hover align-middle">
 
-        <thead class="table-light">
-          <tr>
-            <th>Farmer</th>
-            <th>Contact</th>
-            <th>Location</th>
-            <th>Product</th>
-            <th>Weight</th>
-            <th>Price/kg</th>
-            <th>Total Value</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+<thead class="table-light">
+<tr>
+<th>Farmer</th>
+<th>Contact</th>
+<th>Location</th>
+<th>Product</th>
+<th>Weight</th>
+<th>Price/kg</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+</thead>
 
-        <tbody>
-        {% for log in logs %}
-          <tr>
+<tbody>
+{% for log in logs %}
+<tr>
 
-            <!-- FARMER INFO -->
-            <td>
-              <div class="fw-semibold">
-                {{ log.farmer_name }}
-              </div>
-              <small class="text-muted">
-                ID: {{ log.farmer_id }}
-              </small>
-            </td>
+<td>
+<div class="fw-semibold">{{ log.farmer_name }}</div>
+<small class="text-muted">ID: {{ log.farmer_id }}</small>
+</td>
 
-            <!-- CONTACT -->
-            <td>
-              {{ log.phone }}
-            </td>
+<td>{{ log.phone }}</td>
 
-            <!-- LOCATION -->
-            <td>
-              {{ log.barangay }},
-              {{ log.city }},
-              {{ log.province }}
-            </td>
+<td>
+{{ log.barangay }},
+{{ log.city }},
+{{ log.province }}
+</td>
 
-            <!-- PRODUCT -->
-            <td class="fw-semibold">
-              {{ log.product }}
-            </td>
+<td class="fw-semibold">{{ log.product }}</td>
 
-            <!-- WEIGHT -->
-            <td class="fw-bold text-success">
-              {{ log.weight }} kg
-            </td>
+<td class="fw-bold text-success">
+{{ log.weight }} kg
+</td>
 
-            <!-- PRICE -->
-            <td>
-              ₱{{ "%.2f"|format(log.suggested_price or 0) }}
-            </td>
+<td>
+₱{{ "%.2f"|format(log.resubmitted_price or log.suggested_price or 0) }}
+</td>
 
-            <!-- TOTAL -->
-            <td class="fw-bold">
-              ₱{{
-                "%.2f"|format(
-                  (log.weight or 0) *
-                  (log.suggested_price or 0)
-                )
-              }}
-            </td>
+<td class="fw-bold">
+₱{{ "%.2f"|format((log.weight or 0) * (log.resubmitted_price or log.suggested_price or 0)) }}
+</td>
 
-            <!-- ACTION -->
-            <td>
-              <a href="{{ url_for('admin.approve_log', log_id=log.id) }}"
-                 class="btn btn-sm btn-success">
-                 Approve
-              </a>
-            </td>
+<td>
 
-          </tr>
-        {% endfor %}
-        </tbody>
+<!-- APPROVE -->
+<a href="{{ url_for('admin.approve_log', log_id=log.id) }}"
+class="btn btn-sm btn-success mb-1">
+Approve
+</a>
 
-      </table>
-      </div>
+<!-- EDIT -->
+<form method="POST"
+action="{{ url_for('admin.edit_price', log_id=log.id) }}">
+<input type="number"
+name="new_price"
+step="0.01"
+class="form-control form-control-sm mb-1"
+placeholder="Edit price">
+<button class="btn btn-warning btn-sm w-100">
+Edit Price
+</button>
+</form>
 
-      {% else %}
-      <div class="text-center py-4 text-muted">
-        No pending weigh logs.
-      </div>
-      {% endif %}
+<!-- REJECT -->
+<form method="POST"
+action="{{ url_for('admin.reject_log', log_id=log.id) }}">
 
-    </div>
-  </div>
+<input type="text"
+name="admin_note"
+class="form-control form-control-sm mb-1"
+placeholder="Reason"
+required>
+
+<button class="btn btn-danger btn-sm w-100">
+Reject
+</button>
+
+</form>
+
+</td>
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</div>
+
+{% else %}
+<div class="text-center py-4 text-muted">
+No pending weigh logs.
+</div>
+{% endif %}
+
+</div>
+</div>
+
+
+<!-- ================= PENDING ORDERS ================= -->
+<div class="card shadow-sm border-0">
+
+<div class="card-header fw-bold">
+🧾 Pending Orders
+</div>
+
+<div class="card-body p-0">
+
+<table class="table mb-0">
+
+<thead class="table-light">
+<tr>
+<th>Order ID</th>
+<th>Buyer</th>
+<th>Total</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+{% for order in pending_orders %}
+<tr>
+<td>#{{ order.id }}</td>
+<td>{{ order.buyer.full_name }}</td>
+<td>₱{{ order.total_amount }}</td>
+<td>{{ order.status }}</td>
+<td>
+
+<a href="{{ url_for('admin.approve_order',
+order_id=order.id) }}"
+class="btn btn-success btn-sm">
+Approve
+</a>
+
+</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div>
+</div>
 
 </div>
 {% endblock %}
@@ -116,7 +175,7 @@
 {% block extra_js %}
 <script>
 setInterval(function(){
-  location.reload();
+location.reload();
 }, 5000);
 </script>
 {% endblock %}

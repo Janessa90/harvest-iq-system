@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+<h3>🛒 My Cart</h3>
+
+<table class="table">
+<thead>
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Qty</th>
+<th>Subtotal</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% set total = 0 %}
+
+{% for id, item in session.cart.items() %}
+{% set subtotal = item.price * item.qty %}
+{% set total = total + subtotal %}
+
+<tr>
+<td>{{ item.name }}</td>
+<td>₱{{ item.price }}</td>
+<td>{{ item.qty }}</td>
+<td>₱{{ subtotal }}</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+
+<h4>Total: ₱{{ total }}</h4>
+
+<a href="{{ url_for('orders.checkout') }}"
+   class="btn btn-success">
+   Checkout
+</a>
+
+</div>
+{% endblock %}

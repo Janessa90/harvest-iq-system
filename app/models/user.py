@@ -46,7 +46,7 @@ class User(db.Model, UserMixin):
     )
     # pending / approved / rejected
 
-    # Flask-Login ACTIVE FLAG (FIXES YOUR ERROR)
+    # Flask-Login ACTIVE FLAG
     is_active = db.Column(
         db.Boolean,
         default=True
@@ -62,6 +62,18 @@ class User(db.Model, UserMixin):
     city = db.Column(db.String(100))
     barangay = db.Column(db.String(100))
     full_address = db.Column(db.Text)
+
+    # ✅ BACKWARD COMPATIBILITY (para di mag error sa old code)
+    @property
+    def address(self):
+        """Auto combine address fields"""
+        parts = [
+            self.full_address,
+            self.barangay,
+            self.city,
+            self.province
+        ]
+        return ", ".join([p for p in parts if p])
 
     # ─────────────────────────────────────────────
     # FARMER PRODUCT INFO
@@ -108,7 +120,7 @@ class User(db.Model, UserMixin):
         return str(self.id)
 
     # ─────────────────────────────────────────────
-    # OPTIONAL HELPERS
+    # ROLE HELPERS
     # ─────────────────────────────────────────────
     def is_farmer(self):
         return self.role == "farmer"
@@ -121,3 +133,9 @@ class User(db.Model, UserMixin):
 
     def is_approved(self):
         return self.status == "approved"
+
+    # ─────────────────────────────────────────────
+    # STRING DISPLAY (DEBUG / ADMIN)
+    # ─────────────────────────────────────────────
+    def __repr__(self):
+        return f"<User {self.username} ({self.role})>"

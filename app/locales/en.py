@@ -205,7 +205,7 @@ EN = {
     'cod_note':             'Cash on Delivery selected. Please prepare exact change.',
 
     # ── Orders ───────────────────────────────────────────────────────────────
-    'my_orders':            '📦 My Orders',
+    'my_orders':            ' My Orders',
     'manage_orders':        '📋 Manage Orders',
     'order_detail':         'Order #{id}',
     'order_items':          'Order Items',

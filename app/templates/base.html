@@ -31,11 +31,6 @@
 
       {% if current_user.is_authenticated %}
 
-        <!-- ROLE DASHBOARD LINK -->
-        <a class="btn btn-outline-success btn-sm me-2"
-           href="{{ url_for('users.dashboard') }}">
-           Dashboard
-        </a>
 
         {% if current_user.role == "admin" %}
         <a class="btn btn-outline-dark btn-sm me-2"
